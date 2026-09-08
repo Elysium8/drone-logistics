@@ -1,0 +1,38 @@
+# CMake and Build directories
+build/
+bin/
+out/
+
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic/Static libraries
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE specific files (VS Code, Visual Studio, CLion)
+.vscode/
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python Virtual Environments & Cache
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
