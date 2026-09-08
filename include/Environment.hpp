@@ -11,7 +11,7 @@ class Environment{
         Environment(int w, int h, int d);
 
         int get_index(const Location& loc) const;
-        int is_valid(const Location& loc) const;
+        bool is_valid(const Location& loc) const;
         void set_obstacle(const Location& loc);
         bool is_free(const Location& loc) const;
 };

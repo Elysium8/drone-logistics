@@ -20,4 +20,24 @@ public:
     }
 };
 
+class DiagonalExpander {
+public:
+    std::vector<Location> get_neighbors(const Location& loc, const Environment& env) const {
+        std::vector<Location> neighbors;
+        neighbors.push_back(loc); // Wait 
 
+        for (int dz = -1; dz <= 1; ++dz) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dx = -1; dx <= 1; ++dx) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue; 
+                    
+                    Location next_loc = {loc.x + dx, loc.y + dy, loc.z + dz};
+                    if (env.is_free(next_loc)) {
+                        neighbors.push_back(next_loc);
+                    }
+                }
+            }
+        }
+        return neighbors;
+    }
+};
