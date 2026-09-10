@@ -23,6 +23,7 @@ struct SearchMetrics{
     double runtime_us = 0; 
     int path_cost = -1;
     bool solved = false;
+    std::vector<std::vector<Location>> paths;
 };
 
 struct LocationHasher {

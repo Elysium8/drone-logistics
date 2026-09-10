@@ -34,6 +34,7 @@ public:
 
             calendar.reserve_path(path);
             total_cost += (path.size() - 1);
+            metrics.paths.push_back(path);
         }
 
         metrics.solved = true;

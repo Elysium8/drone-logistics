@@ -1,53 +1,70 @@
 #include <iostream>
+#include <string>
 #include <vector>
-
-// Core architecture
+#include <stdexcept>
 #include "../include/types.hpp"
 #include "../include/Environment.hpp"
 #include "../include/Expanders.hpp" 
 #include "../include/Heuristics.hpp"
+#include "../include/FileIO.hpp"
+#include "../include/PathExporter.hpp"
 
-// Solvers
 #include "../include/solvers/PrioritizedPlanning.hpp"
 
-int main() {
-    // 1. Create a 5x5x5 grid environment
-    Environment env(5, 5, 5);
+void print_usage() {
+    std::cout << "Usage: ./mapf_solver -m <map.txt> -s <scen.txt> [-a <num_agents>]\n";
+}
 
-    // 2. Setup a multi-agent scenario
-    MAPFInstance instance;
-    
-    // Agent 0 goes from bottom-left to top-right
-    // Agent 1 goes from bottom-right to top-left
-    // They will likely cross paths in the middle
-    instance.starts = {{0, 0, 0}, {4, 0, 0}};
-    instance.goals  = {{4, 4, 0}, {0, 4, 0}};
+int main(int argc, char* argv[]) {
+    std::string map_file = "";
+    std::string scen_file = "";
+    std::string out_file = ""; 
+    int num_agents = 1000000; 
 
-    // 3. Instantiate the templated components
-    ManhattanExpander expander; // Assuming this is your expander class name
-    ManhattanHeuristic heuristic;
-    
-    // Notice how we pass the types into the solver template
-    PrioritizedPlanning<ManhattanExpander, ManhattanHeuristic> solver;
-    SearchMetrics metrics;
-
-    std::cout << "Starting Prioritized Planning..." << std::endl;
-
-    // 4. Run the solver
-    solver.solve(env, instance, expander, heuristic, metrics);
-
-    // 5. Output the results
-    std::cout << "====================================\n";
-    if (metrics.solved) {
-        std::cout << "Status:          SUCCESS\n";
-        std::cout << "Total Path Cost: " << metrics.path_cost << "\n";
-    } else {
-        std::cout << "Status:          FAILED\n";
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "-m" && i + 1 < argc) map_file = argv[++i];
+        else if (arg == "-s" && i + 1 < argc) scen_file = argv[++i];
+        else if (arg == "-a" && i + 1 < argc) num_agents = std::stoi(argv[++i]);
+        else if (arg == "--out" && i + 1 < argc) out_file = argv[++i];
     }
-    std::cout << "Nodes Expanded:  " << metrics.nodes_expanded << "\n";
-    std::cout << "Nodes Generated: " << metrics.nodes_generated << "\n";
-    std::cout << "Runtime (us):    " << metrics.runtime_us << "\n";
-    std::cout << "====================================\n";
+
+    if (map_file.empty() || scen_file.empty()) {
+        std::cerr << "Error: Map and scenario files are required.\n";
+        print_usage();
+        return 1;
+    }
+
+    try {
+        Environment env = FileIO::load_map(map_file);
+        
+        MAPFInstance instance = FileIO::load_scenario(scen_file, num_agents);
+        
+        int actual_agents = instance.starts.size();
+
+        ManhattanExpander expander;
+        ManhattanHeuristic heuristic;
+        SearchMetrics metrics;
+        PrioritizedPlanning<ManhattanExpander, ManhattanHeuristic> solver;
+
+        solver.solve(env, instance, expander, heuristic, metrics);
+        
+        if (metrics.solved && !out_file.empty()) {
+        PathExporter::export_paths_json(metrics.paths, out_file);
+    }
+
+        std::cout << map_file << "," 
+                  << scen_file << "," 
+                  << actual_agents << ","
+                  << metrics.solved << "," 
+                  << metrics.path_cost << "," 
+                  << metrics.runtime_us << "," 
+                  << metrics.nodes_generated << "\n";
+
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal Error: " << e.what() << "\n";
+        return 1;
+    }
 
     return 0;
 }
