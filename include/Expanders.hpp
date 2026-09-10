@@ -5,7 +5,7 @@
 
 class ManhattanExpander {
 public:
-    std::vector<Location> get_neighbours(const Location& loc, const Environment &env){
+    std::vector<Location> get_neighbours(const Location& loc, const Environment &env) const {
       std::vector<Location> neighbours;
       neighbours.push_back(loc); // Wait 
       int dx[] {1, -1, 0, 0, 0, 0};

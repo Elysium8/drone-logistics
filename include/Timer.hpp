@@ -13,7 +13,7 @@ public:
         start_time = std::chrono::high_resolution_clock::now();
     }
 
-    double elasped_microseconds() const {
+    double elapsed_microseconds() const {
         auto end_time = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
         return static_cast<double>(duration.count());

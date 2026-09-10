@@ -14,7 +14,7 @@ class SpaceTimeAStar{
 public:
     std::vector<Location> solve(const Location&start, const Location&goal, 
                                 const Environment& env, const ExpanderType& expander,
-                            const ConstraintOracle& constraints, const HeuristicType& heuristic, const SearchMetrics& metrics) 
+                            const ConstraintOracle& constraints, const HeuristicType& heuristic, SearchMetrics& metrics) 
     {
         std::vector<STNode*> all_nodes;
         auto create_node = [&](Location loc, int t, int g, int f, const STNode* parent) {
@@ -25,11 +25,10 @@ public:
 
         std::priority_queue<STNode, std::vector<STNode>, std::greater<STNode>> open_list;
         std::unordered_set<STNode, STNodeHasher> closed_list;
-        int TIME_LIMIT = env.get_index({env.width-1, env.height-1, env.depth-1}); //Need to pass this in eventually
-
-        STNode* start_node = create_node(start, 0, 0, 0, nullptr)
+        int TIME_LIMIT = env.get_index({env.get_width()-1, env.get_height()-1, env.get_depth()-1}); //Need to pass this in eventually
+        STNode* start_node = create_node(start, 0, 0, 0, nullptr);
         open_list.push(*start_node);
-        metrics.nodes_generated++
+        metrics.nodes_generated++;
         STNode* goal_node = nullptr;
 
         while (!open_list.empty()) {
@@ -37,8 +36,8 @@ public:
             open_list.pop();
             metrics.nodes_expanded++;
 
-            if (current == goal) {
-                goal_node = create_node(current.loc, current.t, current.g_score, current.f_score, current.parent)
+            if (current.loc == goal) {
+                goal_node = create_node(current.loc, current.t, current.g_score, current.f_score, current.parent);
                 break;
             }
 
@@ -60,7 +59,7 @@ public:
                     int h = heuristic.get_h_value(neighbor, goal);
                     STNode* parent_ptr = create_node(current.loc, current.t, current.g_score, current.f_score, current.parent);
                     open_list.push({neighbor, next_t, g, g+h, parent_ptr});
-                    metrics.node_generated++;
+                    metrics.nodes_generated++;
                 }
             }
         }
@@ -74,7 +73,7 @@ public:
             std::reverse(path.begin(), path.end());
         }
 
-        for (STNode* n : all_nodes) delete n;for (STNode*)
+        for (STNode* n : all_nodes) delete n;
         return path;
 
     }
