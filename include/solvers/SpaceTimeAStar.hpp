@@ -51,6 +51,7 @@ public:
                 int next_t = current.t + 1;
 
                 if (!constraints.is_free(neighbor, next_t)) continue; //Don't add neighbour to closed if reserved at next time
+                if (!constraints.is_edge_safe(current.loc, neighbor, current.t)) continue; // edge constraints
 
                 STNode next_state = {neighbor, next_t, 0, 0, nullptr}; // Keep values 0 to check against closed
 
