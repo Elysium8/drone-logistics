@@ -107,11 +107,12 @@ def main():
             wireframe=True
         )
 
-        server.scene.add_spline_catmull_rom(
+        segments = np.array([[path[i], path[i + 1]] for i in range(len(path) - 1)])
+        server.scene.add_line_segments(
             name=f"/paths/{agent['name']}_trajectory",
-            positions=path,
-            line_width=3.0,
-            color=agent["color"]
+            points=segments,
+            colors=agent["color"],
+            line_width=3.0
         )
 
         # Drone mesh
@@ -121,7 +122,16 @@ def main():
             radius=0.25,
             color=agent["color"]
         )
-        drone_handles.append((drone, path))
+        
+
+        shadow = server.scene.add_box(
+            name=f"/agents/{agent['name']}_shadow",
+            position=(path[0][0], path[0][1], -0.2), # Resting just above the floor slab
+            dimensions=(0.5, 0.5, 0.02),
+            color=(10, 10, 10),
+            opacity=0.8
+        )
+        drone_handles.append((drone, shadow, path))
 
     # 6. Build the GUI Control Panel
     max_time_steps = max(len(a["path"]) for a in agents_data) - 1 if agents_data else 0
@@ -152,17 +162,37 @@ def main():
         t = time_slider.value
         idx, frac = int(t), t - int(t)
 
-        for drone, path in drone_handles:
+        for drone, shadow, path in drone_handles:
+            # 1. Calculate the exact current 3D position
             if idx >= len(path) - 1:
-                drone.position = path[-1]
+                current_pos = path[-1]
             else:
-                drone.position = (1.0 - frac) * path[idx] + frac * path[idx + 1]
+                current_pos = (1.0 - frac) * path[idx] + frac * path[idx + 1]
 
+            # 2. Update the drone's position in the air
+            drone.position = current_pos
+            
+            # 3. Update the shadow's position (matches X/Y, pinned to Z = -0.2)
+            shadow.position = (current_pos[0], current_pos[1], -0.2)
+
+            # 4. Draw the tether connecting the air position to the ground position
+            tether_points = np.array([
+                current_pos, 
+                (current_pos[0], current_pos[1], -0.2)
+            ])
+            server.scene.add_line_segments(
+                name=f"{drone.name}_tether", 
+                points=np.array([tether_points]), 
+                colors=(255, 255, 255), 
+                line_width=1.0
+            )
+
+        # Update the UI text only once per frame
         if not is_playing:
             status_text.content = f"**Status:** Paused | **Progress:** {int((t / max_time_steps) * 100)}%"
 
     # 9. Main Application Loop
-    play_speed = 0.03
+    play_speed = 0.05
     while True:
         if is_playing:
             new_time = time_slider.value + play_speed

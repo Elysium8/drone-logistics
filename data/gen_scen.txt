@@ -1,0 +1,6 @@
+# start_x start_y start_z goal_x goal_y goal_z
+0 2 6 2 3 0
+0 7 6 2 5 0
+9 9 7 4 5 0
+7 0 7 6 3 0
+4 9 9 4 3 0

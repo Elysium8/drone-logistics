@@ -8,6 +8,7 @@
 #include "../types.hpp"
 #include "CBSNode.hpp"
 #include "CBSConstraints.hpp"
+#include "../Timer.hpp"
 
 class CBS {
 private:
@@ -59,6 +60,7 @@ public:
                LowLevelSolver& low_level_solver, 
                SearchMetrics& metrics) 
     {
+        Timer timer;
         // Min-heap for the High-Level CT (Constraint Tree)
         auto cmp = [](const std::shared_ptr<CBSNode>& left, const std::shared_ptr<CBSNode>& right) {
             return *left > *right;
@@ -98,6 +100,7 @@ public:
                 metrics.solved = true;
                 metrics.path_cost = curr->cost;
                 metrics.paths = curr->paths;
+                metrics.runtime_us = timer.elapsed_microseconds();
                 return true;
             }
 
@@ -141,6 +144,7 @@ public:
         }
 
         metrics.solved = false;
+        metrics.runtime_us = timer.elapsed_microseconds();
         return false;
     }
 };

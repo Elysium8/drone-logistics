@@ -1,0 +1,5 @@
+map_file,scen_file,solver,agents,solved,path_cost,runtime_us,nodes_generated
+data/gen_map.txt,data/gen_scen.txt,pp-astar,10,1,204,1732,10643
+data/gen_map.txt,data/gen_scen.txt,cbs-astar,10,1,204,5002,37501
+data/gen_map.txt,data/gen_scen.txt,cbs-astar,10,1,204,5283,37501
+data/gen_map.txt,data/gen_scen.txt,cbs-astar,5,1,61,337,2231

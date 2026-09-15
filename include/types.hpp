@@ -7,7 +7,7 @@ struct Location {
         return x == other.x && y == other.y && z == other.z;}
     
     bool operator!=(const Location& other) const {
-        return !(*this == other);
+    return !(*this == other);
     }
 };
 

@@ -49,7 +49,7 @@ public:
     }
 }
 
-    bool is_safe(const Location loc, int t) const {
+    bool is_free(const Location loc, int t) const {
         Constraint c = {current_agent, loc, loc, t};
         return constraints.find(c) == constraints.end();
     }

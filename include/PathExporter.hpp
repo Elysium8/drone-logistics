@@ -35,6 +35,5 @@ public:
         file << "]\n";
         
         file.close();
-        std::cout << "Successfully exported paths to: " << filepath << "\n";
     }
 };
