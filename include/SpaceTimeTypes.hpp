@@ -8,11 +8,12 @@ struct STNode {
     int t;
     int g_score;
     int f_score;
+    int conflict_score;
 
     const STNode* parent;
 
     bool operator>(const STNode& other) const {
-        return (f_score > other.f_score);
+        return (f_score > other.f_score) || (f_score == other.f_score && conflict_score > other.conflict_score);
     }
 
     bool operator==(const STNode& other) const {

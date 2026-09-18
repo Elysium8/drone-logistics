@@ -48,16 +48,20 @@ public:
         MAPFInstance instance;
         std::string line;
         int agents_loaded = 0;
+        int start_time = 0;
 
         while (std::getline(file, line) && agents_loaded < num_agents) {
             if (line.empty() || line[0] == '#') continue;
 
             std::stringstream ss(line);
             int sx, sy, sz, gx, gy, gz;
-            ss >> sx >> sy >> sz >> gx >> gy >> gz;
+            int delay = 0;
+            ss >> sx >> sy >> sz >> gx >> gy >> gz >> delay >> start_time;
             
             instance.starts.push_back({sx, sy, sz});
             instance.goals.push_back({gx, gy, gz});
+            instance.delays.push_back(delay);
+            instance.start_times.push_back(start_time);
             agents_loaded++;
         }
         return instance;

@@ -106,14 +106,15 @@ def main():
             color=agent["color"],
             wireframe=True
         )
-
-        segments = np.array([[path[i], path[i + 1]] for i in range(len(path) - 1)])
-        server.scene.add_line_segments(
-            name=f"/paths/{agent['name']}_trajectory",
-            points=segments,
-            colors=agent["color"],
-            line_width=3.0
-        )
+        valid_path = [p for p in path if p[0] >= 0 and p[1] >= 0 and p[2] >= 0]
+        if len(valid_path) > 1:
+            segments = np.array([[path[i], path[i + 1]] for i in range(len(path) - 1)])
+            server.scene.add_line_segments(
+                name=f"/paths/{agent['name']}_trajectory",
+                points=segments,
+                colors=agent["color"],
+                line_width=3.0
+            )
 
         # Drone mesh
         drone = server.scene.add_icosphere(
@@ -164,28 +165,48 @@ def main():
 
         for drone, shadow, path in drone_handles:
             # 1. Calculate the exact current 3D position
-            if idx >= len(path) - 1:
+            if t > len(path) - 1:
+                # The path has completely ended; force it into Limbo to disappear
+                current_pos = np.array([-1.0, -1.0, -1.0])
+            elif idx >= len(path) - 1:
+                # Handle the exact final frame
                 current_pos = path[-1]
             else:
                 current_pos = (1.0 - frac) * path[idx] + frac * path[idx + 1]
 
-            # 2. Update the drone's position in the air
-            drone.position = current_pos
-            
-            # 3. Update the shadow's position (matches X/Y, pinned to Z = -0.2)
-            shadow.position = (current_pos[0], current_pos[1], -0.2)
+            # --- NEW: Check if the drone is in Limbo ---
+            if current_pos[0] < 0 or current_pos[1] < 0 or current_pos[2] < 0:
+                drone.visible = False
+                shadow.visible = False
+                
+                # "Hide" the tether by collapsing it to the origin with 0 width
+                server.scene.add_line_segments(
+                    name=f"{drone.name}_tether", 
+                    points=np.array([[(0,0,0), (0,0,0)]]), 
+                    colors=(0, 0, 0), 
+                    line_width=0.0
+                )
+            else:
+                drone.visible = True
+                shadow.visible = True
+                
+                # 2. Update the drone's position in the air
+                drone.position = current_pos
+                
+                # 3. Update the shadow's position (matches X/Y, pinned to Z = -0.2)
+                shadow.position = (current_pos[0], current_pos[1], -0.2)
 
-            # 4. Draw the tether connecting the air position to the ground position
-            tether_points = np.array([
-                current_pos, 
-                (current_pos[0], current_pos[1], -0.2)
-            ])
-            server.scene.add_line_segments(
-                name=f"{drone.name}_tether", 
-                points=np.array([tether_points]), 
-                colors=(255, 255, 255), 
-                line_width=1.0
-            )
+                # 4. Draw the tether connecting the air position to the ground position
+                tether_points = np.array([
+                    current_pos, 
+                    (current_pos[0], current_pos[1], -0.2)
+                ])
+                server.scene.add_line_segments(
+                    name=f"{drone.name}_tether", 
+                    points=np.array([tether_points]), 
+                    colors=(255, 255, 255), 
+                    line_width=1.0
+                )
 
         # Update the UI text only once per frame
         if not is_playing:

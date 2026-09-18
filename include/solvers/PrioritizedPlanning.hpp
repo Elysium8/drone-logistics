@@ -21,8 +21,10 @@ public:
         for (size_t agent_id = 0; agent_id < instance.starts.size(); ++agent_id) {
             Location start = instance.starts[agent_id];
             Location goal = instance.goals[agent_id];
+            int delay = instance.delays[agent_id];
+            int start_time = instance.start_times[agent_id];
 
-            std::vector<Location> path = low_level_solver.solve(start, goal, env, expander, calendar, heuristic, metrics);
+            std::vector<Location> path = low_level_solver.solve(start, goal, env, delay, start_time, expander, calendar, heuristic, metrics, {});
             
             if (path.empty()) {
                 metrics.solved = false;

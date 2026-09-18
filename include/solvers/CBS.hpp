@@ -12,36 +12,32 @@
 
 class CBS {
 private:
-    // Helper: Safely get the location of an agent at time t. 
-    // If t exceeds the path length, the agent sits at its goal.
-    Location get_pos(const std::vector<Location>& path, int t) const {
-        if (t < path.size()) return path[t];
-        return path.back(); 
-    }
+
 
     // Helper: Scan all paths to find the first spatial conflict
     bool find_conflict(const std::vector<std::vector<Location>>& paths, Conflict& out_conflict) const {
         int num_agents = paths.size();
         for (int i = 0; i < num_agents; ++i) {
             for (int j = i + 1; j < num_agents; ++j) {
+                
                 int max_t = std::max(paths[i].size(), paths[j].size());
                 
                 for (int t = 0; t < max_t; ++t) {
-                    Location loc_i = get_pos(paths[i], t);
-                    Location loc_j = get_pos(paths[j], t);
+                    // Check if agents are actively flying/delaying on their pad
+                    bool i_active = t < paths[i].size();
+                    bool j_active = t < paths[j].size();
 
-                    // 1. Vertex Conflict
-                    if (loc_i == loc_j) {
-                        out_conflict = {i, j, loc_i, loc_i, t};
-                        return true;
-                    }
+                    if (i_active && j_active) {
+                        if (paths[i][t].x < 0 || paths[j][t].x < 0) continue;
+                        // 1. Vertex Conflict
+                        if (paths[i][t] == paths[j][t]) {
+                            out_conflict = {i, j, paths[i][t], paths[i][t], t};
+                            return true;
+                        }
 
-                    // 2. Edge Conflict (Swapping)
-                    if (t > 0) {
-                        Location prev_i = get_pos(paths[i], t - 1);
-                        Location prev_j = get_pos(paths[j], t - 1);
-                        if (loc_i == prev_j && loc_j == prev_i) {
-                            out_conflict = {i, j, prev_i, loc_i, t - 1};
+                        // 2. Edge Conflict (Swapping)
+                        if (t > 0 && paths[i][t-1] == paths[j][t] && paths[j][t-1] == paths[i][t]) {
+                            out_conflict = {i, j, paths[i][t-1], paths[i][t], t};
                             return true;
                         }
                     }
@@ -78,7 +74,7 @@ public:
             ct.build_for_agent(i, root->constraints); // Empty constraints at root
 
             std::vector<Location> path = low_level_solver.solve(
-                instance.starts[i], instance.goals[i], env, expander, ct, heuristic, metrics
+                instance.starts[i], instance.goals[i],  env, instance.delays[i], instance.start_times[i], expander, ct, heuristic, metrics, root->paths
             );
 
             if (path.empty()) return false; // Unsolvable single-agent path
@@ -93,17 +89,21 @@ public:
         while (!open_list.empty()) {
             auto curr = open_list.top();
             open_list.pop();
+            metrics.cbs_nodes_expanded++;
 
             Conflict conflict;
             if (!find_conflict(curr->paths, conflict)) {
                 // Goal found! No conflicts mean this is the optimal valid solution.
+                std::cout << "[DEBUG CBS] Solution found! Cost: " << curr->cost << "\n";
                 metrics.solved = true;
                 metrics.path_cost = curr->cost;
                 metrics.paths = curr->paths;
                 metrics.runtime_us = timer.elapsed_microseconds();
                 return true;
             }
-
+            std::cout << "[DEBUG CBS] Conflict found between agent " << conflict.agent1 
+                      << " and agent " << conflict.agent2 << " at loc (" 
+                      << conflict.loc1.x << "," << conflict.loc1.y << "," << conflict.loc1.z << ") t=" << conflict.t << "\n";
             // --- 3. Branching (Resolve Conflict) ---
             int agents_involved[2] = {conflict.agent1, conflict.agent2};
             
@@ -128,9 +128,10 @@ public:
                 // Replan ONLY for the affected agent 'a'
                 ConstraintTable ct;
                 ct.build_for_agent(a, child->constraints);
+                child->paths[a].clear();
 
                 std::vector<Location> new_path = low_level_solver.solve(
-                    instance.starts[a], instance.goals[a], env, expander, ct, heuristic, metrics
+                    instance.starts[a], instance.goals[a], env, instance.delays[a], instance.start_times[a], expander, ct, heuristic, metrics, child->paths
                 );
 
                 if (!new_path.empty()) {
@@ -139,6 +140,9 @@ public:
                     child->paths[a] = new_path;
                     child->cost = curr->cost + cost_diff;
                     open_list.push(child);
+                    metrics.cbs_nodes_generated++;
+                } else {
+                    std::cout << "[DEBUG CBS] Replan for agent " << a << " returned EMPTY path (branch pruned).\n";
                 }
             }
         }
