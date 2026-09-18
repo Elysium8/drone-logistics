@@ -131,10 +131,10 @@ int main(int argc, char *argv[])
                   << metrics.solved << ","
                   << metrics.path_cost << ","
                   << metrics.runtime_us << ","
-                  << metrics.astar_nodes_generated << ","
-                  << metrics.astar_nodes_expanded << ","
-                  << metrics.cbs_nodes_generated << ","
-                  << metrics.cbs_nodes_expanded << "\n";
+                  << metrics.ll_nodes_generated << ","
+                  << metrics.ll_nodes_expanded << ","
+                  << metrics.hl_nodes_generated << ","
+                  << metrics.hl_nodes_expanded << "\n";
     }
     catch (const std::exception &e)
     {

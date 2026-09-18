@@ -34,14 +34,14 @@ public:
         }
         STNode *start_node = create_node(start, start_time, 0, 0, 0, nullptr);
         open_list.push(*start_node);
-        metrics.astar_nodes_generated++;
+        metrics.ll_nodes_generated++;
         STNode *goal_node = nullptr;
 
         while (!open_list.empty())
         {
             STNode current = open_list.top();
             open_list.pop();
-            metrics.astar_nodes_expanded++;
+            metrics.ll_nodes_expanded++;
             STNode *current_ptr = create_node(current.loc, current.t, current.g_score, current.f_score, current.conflict_score, current.parent);
 
             if (current.loc == goal)
@@ -59,7 +59,7 @@ public:
 
             for (const Location &neighbor : expander.get_neighbours(current.loc, env))
             {
-                metrics.nodes_touched++;
+                metrics.ll_nodes_touched++;
                 int next_t = current.t + 1;
 
                 if (!constraints.is_free(neighbor, next_t))
@@ -78,11 +78,11 @@ public:
                     {
                         if (path.size() > next_t)
                         {
-                            conflicts += path[next_t] == neighbor;
+                            conflicts += (path[next_t] == neighbor || (path[next_t] == current.loc && path[current.t] == neighbor));
                         }
                     }
                     open_list.push({neighbor, next_t, g, g + h, conflicts, current_ptr});
-                    metrics.astar_nodes_generated++;
+                    metrics.ll_nodes_generated++;
                 }
             }
         }
