@@ -5,3 +5,5 @@ data/gen_map.txt,data/gen_scen.txt,cbs-astar,15,1,288,4.09348e+06,13546390,65824
 data/gen_map.txt,data/gen_scen.txt,cbs-astar,16,1,319,4.57861e+06,14267568,7163742,4094,2048
 data/gen_map.txt,data/gen_scen.txt,cbs-astar,17,1,331,8.88732e+06,27582874,13445760,8190,4096
 data/gen_map.txt,data/gen_scen.txt,cbs-astar,18,1,366,8.41682e+06,25737115,12540686,8190,4096
+data/gen_map.txt,data/gen_scen.txt,cbs-astar,15,1,288,4.48354e+06,13546390,6582430,4094,2048
+data/gen_map.txt,data/gen_scen.txt,cbs-astar,4,1,62,170,1352,305,0,1
