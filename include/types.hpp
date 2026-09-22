@@ -31,7 +31,8 @@ struct SearchMetrics
     int hl_nodes_generated = 0;
     int ll_nodes_touched = 0;
     double runtime_us = 0;
-    int path_cost = -1;
+    int path_cost = 0;
+    int makespan = 0;
     bool solved = false;
     std::vector<std::vector<Location>> paths;
 };

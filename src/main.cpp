@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
             solver.solve<ManhattanExpander, ManhattanHeuristic>(env, instance, expander, heuristic, metrics);
         }
 
-        if (hl_solver == "cbs")
+        else if (hl_solver == "cbs")
         {
             CBS solver;
 
@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
                   << combo_name << ","
                   << actual_agents << ","
                   << metrics.solved << ","
+                  << metrics.makespan << ","
                   << metrics.path_cost << ","
                   << metrics.runtime_us << ","
                   << metrics.ll_nodes_generated << ","

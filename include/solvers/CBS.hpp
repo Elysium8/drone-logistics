@@ -104,10 +104,17 @@ public:
             if (!find_conflict(curr->paths, conflict))
             {
                 // Goal found! No conflicts mean this is the optimal valid solution.
-                metrics.solved = true;
-                metrics.path_cost = curr->cost;
                 metrics.paths = curr->paths;
                 metrics.runtime_us = timer.elapsed_microseconds();
+                metrics.solved = true;
+                metrics.path_cost = curr->cost;
+                int max_len {0};
+                for (const auto& path : metrics.paths) {
+                    if (path.size() > max_len) {
+                        max_len = path.size();
+                    }
+                }
+                metrics.makespan = max_len;
                 return true;
             }
             // --- 3. Branching (Resolve Conflict) ---
