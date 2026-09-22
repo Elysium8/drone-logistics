@@ -12,6 +12,7 @@
 // High-Level Solvers
 #include "../include/solvers/PrioritizedPlanning.hpp"
 #include "../include/solvers/CBS.hpp"
+#include "../include/solvers/PIBT.hpp"
 
 // Low-Level Components
 #include "../include/solvers/CBSConstraints.hpp" // For ConstraintTable
@@ -72,6 +73,12 @@ int main(int argc, char *argv[])
         // ==========================================
         // SOLVER SELECTION MATRIX
         // ==========================================
+
+        if (hl_solver == "pibt") {
+            PIBT solver;
+            solver.solve<ManhattanExpander, ManhattanHeuristic>(env, instance, expander, heuristic, metrics);
+        }
+
         if (hl_solver == "cbs")
         {
             CBS solver;
