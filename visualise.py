@@ -124,15 +124,9 @@ def main():
             color=agent["color"]
         )
         
-
-        shadow = server.scene.add_box(
-            name=f"/agents/{agent['name']}_shadow",
-            position=(path[0][0], path[0][1], -0.2), # Resting just above the floor slab
-            dimensions=(0.5, 0.5, 0.02),
-            color=(10, 10, 10),
-            opacity=0.8
-        )
-        drone_handles.append((drone, shadow, path))
+        # (Shadow generation removed)
+        
+        drone_handles.append((drone, path)) # Only save the drone and path now
 
     # 6. Build the GUI Control Panel
     max_time_steps = max(len(a["path"]) for a in agents_data) - 1 if agents_data else 0
@@ -163,50 +157,24 @@ def main():
         t = time_slider.value
         idx, frac = int(t), t - int(t)
 
-        for drone, shadow, path in drone_handles:
-            # 1. Calculate the exact current 3D position
-            if t > len(path) - 1:
-                # The path has completely ended; force it into Limbo to disappear
-                current_pos = np.array([-1.0, -1.0, -1.0])
-            elif idx >= len(path) - 1:
-                # Handle the exact final frame
-                current_pos = path[-1]
-            else:
-                current_pos = (1.0 - frac) * path[idx] + frac * path[idx + 1]
+        with server.atomic(): # Groups the updates to stop lag/tearing
+            for drone, path in drone_handles:
+                # 1. Calculate the exact current 3D position
+                if t > len(path) - 1:
+                    # The path has completely ended; force it into Limbo to disappear
+                    current_pos = np.array([-1.0, -1.0, -1.0])
+                elif idx >= len(path) - 1:
+                    # Handle the exact final frame
+                    current_pos = path[-1]
+                else:
+                    current_pos = (1.0 - frac) * path[idx] + frac * path[idx + 1]
 
-            # --- NEW: Check if the drone is in Limbo ---
-            if current_pos[0] < 0 or current_pos[1] < 0 or current_pos[2] < 0:
-                drone.visible = False
-                shadow.visible = False
-                
-                # "Hide" the tether by collapsing it to the origin with 0 width
-                server.scene.add_line_segments(
-                    name=f"{drone.name}_tether", 
-                    points=np.array([[(0,0,0), (0,0,0)]]), 
-                    colors=(0, 0, 0), 
-                    line_width=0.0
-                )
-            else:
-                drone.visible = True
-                shadow.visible = True
-                
-                # 2. Update the drone's position in the air
-                drone.position = current_pos
-                
-                # 3. Update the shadow's position (matches X/Y, pinned to Z = -0.2)
-                shadow.position = (current_pos[0], current_pos[1], -0.2)
-
-                # 4. Draw the tether connecting the air position to the ground position
-                tether_points = np.array([
-                    current_pos, 
-                    (current_pos[0], current_pos[1], -0.2)
-                ])
-                server.scene.add_line_segments(
-                    name=f"{drone.name}_tether", 
-                    points=np.array([tether_points]), 
-                    colors=(255, 255, 255), 
-                    line_width=1.0
-                )
+                # 2. Update Drone Visibilty and Position
+                if current_pos[0] < 0 or current_pos[1] < 0 or current_pos[2] < 0:
+                    drone.visible = False
+                else:
+                    drone.visible = True
+                    drone.position = current_pos
 
         # Update the UI text only once per frame
         if not is_playing:

@@ -15,8 +15,7 @@ private:
                          const HeuristicType &heuristic) {
         
         // Get neighbours 
-        const int MAX_NEIGHBOURS {7};  //will need to change for 26 expanded in the future
-        std::array<Location, MAX_NEIGHBOURS> neighbours;
+        std::array<Location, expander.max_neighbours> neighbours;
         int valid_neighbours = 0;
         for (const Location &neighbor : expander.get_neighbours(paths[a_i][t], env)) {
             neighbours[valid_neighbours] = neighbor;

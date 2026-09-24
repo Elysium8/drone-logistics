@@ -5,6 +5,7 @@
 
 class ManhattanExpander {
 public:
+    static constexpr int max_neighbours {7};
     std::vector<Location> get_neighbours(const Location& loc, const Environment &env) const {
       std::vector<Location> neighbours;
       neighbours.push_back(loc); // Wait 
@@ -22,7 +23,8 @@ public:
 
 class DiagonalExpander {
 public:
-    std::vector<Location> get_neighbors(const Location& loc, const Environment& env) const {
+    static constexpr int max_neighbours {27};
+    std::vector<Location> get_neighbours(const Location& loc, const Environment& env) const {
         std::vector<Location> neighbors;
         neighbors.push_back(loc); // Wait 
 
