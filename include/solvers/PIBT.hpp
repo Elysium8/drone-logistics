@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 
 class PIBT {
 private:
@@ -25,21 +26,21 @@ private:
         std::sort(neighbours.begin(), neighbours.begin()+valid_neighbours, [&](const Location& a, const Location& b)
                   {return heuristic.get_h_value(a, instance.goals[a_i]) < heuristic.get_h_value(b, instance.goals[a_i]);});
 
-        for (const Location &neighbour : neighbours) {
-            if (a_j != -1 && paths[a_j][t] == neighbour) {
+        for (int i = 0; i < valid_neighbours; i++) {
+            if (a_j != -1 && paths[a_j][t] == neighbours[i]) {
                         goto next_neighbour;  //swap conflict
                     }
             for (int a=0; a<n; a++) {
                 if (paths[a].size() > t + 1)  {
-                    if (paths[a][t+1] == neighbour) {
+                    if (paths[a][t+1] == neighbours[i]) {
                         goto next_neighbour; // vertex conflict 
                     }
 
                 }
             }
-        paths[a_i].push_back(neighbour);
+        paths[a_i].push_back(neighbours[i]);
         for (int a_k=0; a_k<n; a_k++) {
-            if (paths[a_k].size() == t+1 && paths[a_k][t] == neighbour) {
+            if (paths[a_k].size() == t+1 && paths[a_k][t] == neighbours[i]) {
                 if (reached_goal[a_k]) continue;
                 if (!solve_one_agent(a_k, a_i, t, env, instance, expander, heuristic)) {
                     paths[a_i].pop_back();
@@ -132,6 +133,15 @@ public:
         }
     metrics.solved = false;
     metrics.runtime_us = timer.elapsed_microseconds();
+    metrics.paths = paths;
+    int agent_id {0};
+    for (const auto& element : reached_goal) {
+        if (!element) {
+        std::cout << agent_id;}
+        agent_id++;
+        
+    }
+    
     return false;
     }
 };

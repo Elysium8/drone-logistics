@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
         }
         // ==========================================
 
-        if (metrics.solved && !out_file.empty())
+        if (!out_file.empty())
         {
             PathExporter::export_paths_json(metrics.paths, out_file);
         }

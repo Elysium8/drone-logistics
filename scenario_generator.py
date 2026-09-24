@@ -62,7 +62,7 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
         
         if len(possible_locs) < max(num_incoming, num_outgoing):
             raise ValueError("Not enough perimeter space! Increase map dimensions or decrease chimney height.")
-            
+        
         incoming_starts = random.sample(possible_locs, num_incoming)
         outgoing_goals = random.sample(possible_locs, num_outgoing)
 
@@ -129,8 +129,8 @@ if __name__ == "__main__":
     parser.add_argument("-H", "--height", type=int, default=20)
     parser.add_argument("-d", "--depth", type=int, default=10)
     parser.add_argument("-a", "--agents", type=int, default=16)
-    parser.add_argument("-s", "--spacing", type=int, default=2, help="Space between pads")
-    parser.add_argument("-c", "--chimneys", type=int, default=2, help="Height of the ground constraints")
+    parser.add_argument("-s", "--spacing", type=int, default=1, help="Space between pads")
+    parser.add_argument("-c", "--chimneys", type=int, default=0, help="Height of the ground constraints")
     parser.add_argument("--map", type=str, default="data/gen_map.txt")
     parser.add_argument("--scen", type=str, default="data/gen_scen.txt")
     parser.add_argument("--ratio", type=float, default=1.0, help="Ratio of incoming drones (0.0 to 1.0)")
