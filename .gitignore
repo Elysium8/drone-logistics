@@ -3,6 +3,9 @@ build/
 bin/
 out/
 
+#Data files 
+data/
+
 # Compiled Object files
 *.o
 *.obj
