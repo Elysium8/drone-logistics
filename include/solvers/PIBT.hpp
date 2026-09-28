@@ -108,7 +108,7 @@ public:
                 
             }
             for (int a=0; a<n; a++) {
-                if (reached_goal[a]) continue;
+                if (reached_goal[a] || paths[a][t].x == -1) continue;
                 if (paths[a][t] == instance.goals[a]) {
                     current_priorities[a] = initial_priorities[a];
                 }
@@ -132,15 +132,7 @@ public:
         }
     metrics.solved = false;
     metrics.runtime_us = timer.elapsed_microseconds();
-    metrics.paths = paths;
-    int agent_id {0};
-    for (const auto& element : reached_goal) {
-        if (!element) {
-        std::cout << agent_id;}
-        agent_id++;
-        
-    }
-    
+    metrics.paths = paths;    
     return false;
     }
 };

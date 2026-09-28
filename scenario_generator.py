@@ -10,25 +10,37 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
     # --- 1. Split Agents based on Ratio ---
     num_incoming = int(num_agents * ratio)
     num_outgoing = num_agents - num_incoming
-    num_pads_needed = max(num_incoming, num_outgoing)
+    num_pads_desired = max(num_incoming, num_outgoing)
 
     # --- 2. Generate Ground Pads ---
-    cols = math.ceil(math.sqrt(num_pads_needed))
-    rows = math.ceil(num_pads_needed / cols)
+    # Find the maximum pads that can physically fit in the grid
+    max_cols = (w - 1) // spacing + 1
+    max_rows = (h - 1) // spacing + 1
+    max_possible_pads = max_cols * max_rows
     
+    if max_possible_pads == 0:
+        raise ValueError("Map is too small to fit even a single pad!")
+
+    # Generate as many pads as desired, capped by physical map limits
+    num_pads_to_generate = min(num_pads_desired, max_possible_pads)
+
+    cols = min(math.ceil(math.sqrt(num_pads_to_generate)), max_cols)
+    rows = math.ceil(num_pads_to_generate / cols)
+    
+    if rows > max_rows:
+        rows = max_rows
+        cols = math.ceil(num_pads_to_generate / rows)
+        
     grid_w = (cols - 1) * spacing + 1
     grid_h = (rows - 1) * spacing + 1
-    
-    if grid_w > w or grid_h > h:
-        raise ValueError(f"Map is too small to fit the grid! Needs at least {grid_w}x{grid_h}.")
         
     start_x = (w - grid_w) // 2
     start_y = (h - grid_h) // 2
     
     pads = []
-    pad_xy_set = set() # Track just the X,Y coordinates of the pads for obstacle generation
+    pad_xy_set = set()
     
-    for i in range(num_pads_needed):
+    for i in range(num_pads_to_generate):
         r = i // cols
         c = i % cols
         pad_x = start_x + (c * spacing)
@@ -38,17 +50,15 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
         
     random.shuffle(pads)
     
-    # Assign the pads to the two groups
-    incoming_goals = random.sample(pads, k=num_incoming)
-    outgoing_starts = random.sample(pads, k=num_outgoing)
+    # Use choices (with replacement) so pads can be shared and overlap
+    incoming_goals = random.choices(pads, k=num_incoming)
+    outgoing_starts = random.choices(pads, k=num_outgoing)
     
     # --- 3. Generate Obstacles (The "Chimneys") ---
     obstacles = []
-    # Fill the map with obstacles up to the chimney height...
     for z in range(chimney_height):
         for x in range(w):
             for y in range(h):
-                # ...unless the x,y coordinate is exactly over a landing pad
                 if (x, y) not in pad_xy_set:
                     obstacles.append((x, y, z))
 
@@ -56,29 +66,27 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
     spawn_z_start = max(2, chimney_height) 
     
     if config == "any":
-        # Relaxed: Anywhere on the perimeter
         possible_locs = [(x, y, z) for x in range(w) for y in range(h) for z in range(spawn_z_start, d) 
                          if x == 0 or x == w - 1 or y == 0 or y == h - 1]
         
-        if len(possible_locs) < max(num_incoming, num_outgoing):
-            raise ValueError("Not enough perimeter space! Increase map dimensions or decrease chimney height.")
+        if not possible_locs:
+            raise ValueError("No valid perimeter space available!")
         
-        incoming_starts = random.sample(possible_locs, num_incoming)
-        outgoing_goals = random.sample(possible_locs, num_outgoing)
+        # Allow shared perimeter spawns
+        incoming_starts = random.choices(possible_locs, k=num_incoming)
+        outgoing_goals = random.choices(possible_locs, k=num_outgoing)
 
     elif config == "faces":
-        # Restrictive: Incoming on North face, Outgoing on South face
         north_face = [(x, 0, z) for x in range(w) for z in range(spawn_z_start, d)]
         south_face = [(x, h - 1, z) for x in range(w) for z in range(spawn_z_start, d)]
         
-        if len(north_face) < num_incoming or len(south_face) < num_outgoing:
-            raise ValueError("Not enough space on the faces for this agent count!")
+        if not north_face or not south_face:
+            raise ValueError("Not enough space on the faces!")
             
-        incoming_starts = random.sample(north_face, num_incoming)
-        outgoing_goals = random.sample(south_face, num_outgoing)
+        incoming_starts = random.choices(north_face, k=num_incoming)
+        outgoing_goals = random.choices(south_face, k=num_outgoing)
 
     elif config == "vent":
-        # Extreme Bottleneck: All outgoing share south vent, all incoming share north vent
         south_vent = (w // 2, h - 1, d - 1)
         north_vent = (w // 2, 0, d - 1)
         
@@ -101,23 +109,28 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
     # --- 6. Write Scenario File ---
     os.makedirs(os.path.dirname(scen_file), exist_ok=True)
     with open(scen_file, 'w') as f:
-        # Added the 8th column: start_time
         f.write("# start_x start_y start_z goal_x goal_y goal_z delay start_time\n")
         
-        # Write Incoming Agents (with hardcoded exception for "vent")
         incoming_stagger = 2 if config == "vent" else stagger
+        
+        # Track start times based on specific spawn locations to stagger overlapping drones
+        inc_spawn_times = {}
         for i in range(num_incoming):
             sx, sy, sz = incoming_starts[i]
             gx, gy, gz = incoming_goals[i]
-            start_time = i * incoming_stagger
-            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} {delay} {start_time}\n")
             
-        # Write Outgoing Agents (uses the standard stagger)
+            current_time = inc_spawn_times.get((sx, sy, sz), 0)
+            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} {delay} {current_time}\n")
+            inc_spawn_times[(sx, sy, sz)] = current_time + incoming_stagger
+            
+        out_spawn_times = {}
         for i in range(num_outgoing):
             sx, sy, sz = outgoing_starts[i]
             gx, gy, gz = outgoing_goals[i]
-            start_time = i * stagger
-            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} 0 {start_time}\n")
+            
+            current_time = out_spawn_times.get((sx, sy, sz), 0)
+            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} 0 {current_time}\n")
+            out_spawn_times[(sx, sy, sz)] = current_time + stagger
             
     print(f"Generated {num_agents}-drone scenario ({num_incoming} in, {num_outgoing} out) on {w}x{h}x{d} map.")
     print(f"Chimney Height: {chimney_height} (Total Obstacles: {len(obstacles)})")

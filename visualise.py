@@ -101,7 +101,7 @@ def main():
         # Ground pad for landing
         server.scene.add_box(
             name=f"/environment/pads/{agent['name']}_pad",
-            position=(goal_pos[0], goal_pos[1], -0.15),
+            position=(goal_pos[0], goal_pos[1], goal_pos[2]),
             dimensions=(1.0, 1.0, 0.1),
             color=agent["color"],
             wireframe=True
@@ -181,7 +181,7 @@ def main():
             status_text.content = f"**Status:** Paused | **Progress:** {int((t / max_time_steps) * 100)}%"
 
     # 9. Main Application Loop
-    play_speed = 0.05
+    play_speed = 0.1
     while True:
         if is_playing:
             new_time = time_slider.value + play_speed

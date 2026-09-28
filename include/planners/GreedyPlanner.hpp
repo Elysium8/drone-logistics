@@ -16,8 +16,9 @@ std::tuple<Location, int> plan_one_agent_start() {
 };
 
 /*
-Arguments:
+Arguments: 
 Returns: A goal location
+
 */
 Location plan_one_agent_goal() {
 
