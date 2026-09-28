@@ -14,7 +14,7 @@ struct Conflict {
 struct Constraint {
     int agent_id; 
     Location loc1;  // if these are the same then it's a vertex constraint 
-    Location loc2; 
+    Location loc2;  
     int t;
     
     bool operator==(const Constraint& o) const {
