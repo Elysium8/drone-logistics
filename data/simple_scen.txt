@@ -1,0 +1,7 @@
+# start_x start_y start_z goal_x goal_y goal_z
+# Agent 0: Bottom-left to Top-right (floor level)
+0 0 0 4 4 0
+# Agent 1: Bottom-right to Top-left (floor level)
+4 0 0 0 4 0
+# Agent 2: Center floor to Center ceiling (vertical)
+2 2 0 2 2 4
