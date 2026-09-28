@@ -19,6 +19,9 @@
 #include "../include/ReservationTable.hpp"       // For PP's ReservationTable
 #include "../include/solvers/SpaceTimeAStar.hpp"
 
+// Validation
+#include "../include/test/SolutionValidator.hpp" // 
+
 void print_usage()
 {
     std::cout << "Usage: ./mapf_solver -m <map.txt> -s <scen.txt> [-a <num_agents>] [--out <paths.json>] [--hl <pp|cbs>] [--ll <astar|sipp>]\n";
@@ -122,6 +125,17 @@ int main(int argc, char *argv[])
             throw std::invalid_argument("Unknown High-Level solver: " + hl_solver);
         }
         // ==========================================
+
+        if (metrics.solved && !metrics.paths.empty()) {
+            auto result = SolutionValidator::validate(env, metrics.paths, expander);
+            if (!result.is_valid) {
+                std::cerr << "--- VALIDATION FAILED ---\n";
+                std::cerr << result.error_message << "\n";
+                std::cerr << "-------------------------\n";
+            } else {
+                std::cout << "Validation: SUCCESS\n";
+            }
+        }
 
         if (!out_file.empty())
         {

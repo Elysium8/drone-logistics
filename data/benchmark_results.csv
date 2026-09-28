@@ -127,3 +127,10 @@ data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,59,5122,33203,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,59,5122,2916,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,190,1,66,5148,3158,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,180,1,60,4356,2301,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,59,5122,2933,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,600,1,605,182700,117572,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,600,1,605,182700,123969,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,1453,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,223,12031,1116,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,1616,0,0,0,0
