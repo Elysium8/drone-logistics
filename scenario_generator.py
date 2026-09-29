@@ -49,7 +49,6 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
         pad_xy_set.add((pad_x, pad_y))
         
     random.shuffle(pads)
-    
     # Use choices (with replacement) so pads can be shared and overlap
     incoming_goals = random.choices(pads, k=num_incoming)
     outgoing_starts = random.choices(pads, k=num_outgoing)

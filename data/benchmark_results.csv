@@ -54,12 +54,12 @@ data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,304,33314,22897,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,297,33345,24029,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,290,31470,22488,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,275,27720,17190,0,0,0,0
-127131136140144157184241data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,0,0,0,50802,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,0,0,0,50802,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,274,27595,19592,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,1,273,27345,16851,0,0,0,0
-138data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,0,0,0,14147,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,250,0,0,0,14147,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,122,5536,1815,0,0,0,0
-84data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,0,0,0,2233,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,0,0,0,2233,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,118,5160,2016,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,113,4660,1696,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,113,4660,1753,0,0,0,0
@@ -131,7 +131,36 @@ data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,59,5122,2933,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,600,1,605,182700,117572,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,600,1,605,182700,123969,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,1453,0,0,0,0
-Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,223,12031,1116,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,1616,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,1614,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,120,5395,4130,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,1,1,0,16,122,444,104,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,2,1,0,36,299,916,222,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,3,1,0,51,359,1234,297,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,2,1,0,36,272,916,222,0,0
+test 55Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,4,1,27,77,37,0,0,0,0
+test 55test 43
+test 55test 43
+0
+1
+test 55test 43
+0
+1
+test 55test 43
+0
+1
+2
+3
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,4,1,0,77,1475,5062,2091,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pp-astar,4,1,0,77,1358,5062,2091,0,0
+data/gen_map.txt,data/gen_scen.txt,pp-astar,20,0,0,0,5841,12730,5318,0,0
+data/gen_map.txt,data/gen_scen.txt,pp-astar,20,0,0,0,5823,12730,5318,0,0
+fucked itdata/gen_map.txt,data/gen_scen.txt,pp-astar,20,0,0,0,3103,12730,5318,0,0

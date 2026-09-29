@@ -45,13 +45,16 @@ public:
     void reserve_path(const std::vector<Location>& path) {
         if (path.empty()) {return;}
 
+        
         for (int t = 0; t < path.size(); ++t) {
+            if (path[t].x == -1) {
+                continue;
+            }
             table[t].insert(path[t]);
-            if (t > 0) {
-                edge_table.insert({path[t], path[t-1], t - 1});
+            if (t > 0 && path[t-1].x != -1) {
+                edge_table.insert({path[t], path[t-1], t});
             }
         }
-        goal_reservations[path.back()] = path.size() - 1;
     }
 };
 

@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 template <typename ExpanderType, typename ConstraintOracle, typename HeuristicType>
 class SpaceTimeAStar
@@ -97,7 +98,6 @@ public:
             }
             std::reverse(path.begin(), path.end());
 
-            // All padding logic moved safely inside
             Location final_loc = path.back();
             for (int d = 0; d < delay; ++d)
             {

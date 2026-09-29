@@ -3,7 +3,7 @@
 #include "../Environment.hpp"
 #include "../ReservationTable.hpp"
 #include "../Timer.hpp"
-
+#include <iostream>
 class PrioritizedPlanning {
 public:
     template <typename ExpanderType, typename HeuristicType, typename LowLevelSolver>
@@ -17,7 +17,6 @@ public:
         Timer timer;
         ReservationTable calendar;
         int total_cost = 0;
-
         for (size_t agent_id = 0; agent_id < instance.starts.size(); ++agent_id) {
             Location start = instance.starts[agent_id];
             Location goal = instance.goals[agent_id];

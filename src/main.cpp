@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
     std::string map_file = "";
     std::string scen_file = "";
     std::string out_file = "";
-
     // Default stack
     std::string hl_solver = "pp";
     std::string ll_solver = "astar";

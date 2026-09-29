@@ -1,6 +1,6 @@
 #pragma once
-#include "Environment.hpp"
-#include "types.hpp"
+#include "../Environment.hpp"
+#include "../types.hpp"
 #include <vector>
 #include <string>
 #include <unordered_map>
