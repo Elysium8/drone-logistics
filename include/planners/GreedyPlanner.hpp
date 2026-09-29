@@ -7,10 +7,10 @@ private:
 
 public:
 /*
-Arguments:
+Arguments: Current agent positions and goals. Plus agents that are about to becoming "ready" to spawn (either incoming or outgoing)
 Returns: A start location and a start time
 */
-std::tuple<Location, int> plan_one_agent_start() {
+std::tuple<Location, int> plan_one_agent_start(std::vector<Location> &agent_locations, std::vector<Location> &goals) {
 
 
 };

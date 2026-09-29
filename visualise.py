@@ -106,10 +106,13 @@ def main():
             color=agent["color"],
             wireframe=True
         )
+        
+        path_handle = None
         valid_path = [p for p in path if p[0] >= 0 and p[1] >= 0 and p[2] >= 0]
         if len(valid_path) > 1:
-            segments = np.array([[path[i], path[i + 1]] for i in range(len(path) - 1)])
-            server.scene.add_line_segments(
+            # FIX: Use valid_path here instead of path to avoid drawing lines to (-1, -1, -1)
+            segments = np.array([[valid_path[i], valid_path[i + 1]] for i in range(len(valid_path) - 1)])
+            path_handle = server.scene.add_line_segments(
                 name=f"/paths/{agent['name']}_trajectory",
                 points=segments,
                 colors=agent["color"],
@@ -124,9 +127,8 @@ def main():
             color=agent["color"]
         )
         
-        # (Shadow generation removed)
-        
-        drone_handles.append((drone, path)) # Only save the drone and path now
+        # Save the drone, the path array, AND the path handle
+        drone_handles.append((drone, path, path_handle))
 
     # 6. Build the GUI Control Panel
     max_time_steps = max(len(a["path"]) for a in agents_data) - 1 if agents_data else 0
@@ -158,7 +160,7 @@ def main():
         idx, frac = int(t), t - int(t)
 
         with server.atomic(): # Groups the updates to stop lag/tearing
-            for drone, path in drone_handles:
+            for drone, path, path_handle in drone_handles:
                 # 1. Calculate the exact current 3D position
                 if t > len(path) - 1:
                     # The path has completely ended; force it into Limbo to disappear
@@ -172,9 +174,13 @@ def main():
                 # 2. Update Drone Visibilty and Position
                 if current_pos[0] < 0 or current_pos[1] < 0 or current_pos[2] < 0:
                     drone.visible = False
+                    if path_handle is not None:
+                        path_handle.visible = False
                 else:
                     drone.visible = True
                     drone.position = current_pos
+                    if path_handle is not None:
+                        path_handle.visible = True
 
         # Update the UI text only once per frame
         if not is_playing:

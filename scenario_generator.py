@@ -11,7 +11,7 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
     num_incoming = int(num_agents * ratio)
     num_outgoing = num_agents - num_incoming
     num_pads_desired = max(num_incoming, num_outgoing)
-
+    print("chimney height" , chimney_height)
     # --- 2. Generate Ground Pads ---
     # Find the maximum pads that can physically fit in the grid
     max_cols = (w - 1) // spacing + 1
