@@ -20,7 +20,9 @@
 #include "../include/solvers/SpaceTimeAStar.hpp"
 
 //Planners 
-#include "../include/planners/GreedyPlanner.hpp"
+#include "../include/planners/RandomPlanner.hpp"
+#include "../include/planners/SafePlanner.hpp"
+
 
 // Validation
 #include "../include/test/SolutionValidator.hpp" // 
@@ -74,14 +76,14 @@ int main(int argc, char *argv[])
         ManhattanExpander expander;
         ManhattanHeuristic heuristic;
         SearchMetrics metrics;
-        GreedyPlanner planner; 
+        SafePlanner planner; 
         // ==========================================
         // SOLVER SELECTION MATRIX
         // ==========================================
 
         if (hl_solver == "pibt") {
             PIBT solver;
-            solver.solve<ManhattanExpander, ManhattanHeuristic, GreedyPlanner>(env, instance, expander, heuristic, planner, metrics);
+            solver.solve<ManhattanExpander, ManhattanHeuristic, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
         else if (hl_solver == "cbs")
