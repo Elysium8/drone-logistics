@@ -24,3 +24,11 @@ bool Environment::is_free(const Location& loc) const {
     if (!is_valid(loc)) return false;
     return !obstacles[get_index(loc)];
 }
+
+void Environment::add_pad(const Location& loc) {
+    available_pads.push_back(loc);
+}
+
+const std::vector<Location>& Environment::get_pads() const {
+    return available_pads;
+}

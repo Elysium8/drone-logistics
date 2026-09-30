@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
         ManhattanExpander expander;
         ManhattanHeuristic heuristic;
         SearchMetrics metrics;
-
         // ==========================================
         // SOLVER SELECTION MATRIX
         // ==========================================
