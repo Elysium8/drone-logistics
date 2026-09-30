@@ -6,6 +6,7 @@ class Environment{
     private:
         int width, height, depth;
         std::vector<bool> obstacles; //1D array flattened 
+        std::vector<Location> available_pads;
     
     public:
         Environment(int w, int h, int d);
@@ -17,4 +18,7 @@ class Environment{
         bool is_valid(const Location& loc) const;
         void set_obstacle(const Location& loc);
         bool is_free(const Location& loc) const;
+
+        void add_pad(const Location& loc);
+        const std::vector<Location>& get_pads() const;
 };

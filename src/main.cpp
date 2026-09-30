@@ -19,6 +19,9 @@
 #include "../include/ReservationTable.hpp"       // For PP's ReservationTable
 #include "../include/solvers/SpaceTimeAStar.hpp"
 
+//Planners 
+#include "../include/planners/GreedyPlanner.hpp"
+
 // Validation
 #include "../include/test/SolutionValidator.hpp" // 
 
@@ -71,13 +74,14 @@ int main(int argc, char *argv[])
         ManhattanExpander expander;
         ManhattanHeuristic heuristic;
         SearchMetrics metrics;
+        GreedyPlanner planner; 
         // ==========================================
         // SOLVER SELECTION MATRIX
         // ==========================================
 
         if (hl_solver == "pibt") {
             PIBT solver;
-            solver.solve<ManhattanExpander, ManhattanHeuristic>(env, instance, expander, heuristic, metrics);
+            solver.solve<ManhattanExpander, ManhattanHeuristic, GreedyPlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
         else if (hl_solver == "cbs")

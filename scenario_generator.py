@@ -3,10 +3,10 @@ import math
 import argparse
 import os
 
-def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimney_height=2, ratio=1.0, delay = 5, config="any", stagger=0, seed=None):
+def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimney_height=2, ratio=1.0, delay = 5, config="any", stagger=0, dynamic_prob_in=0.0, dynamic_prob_out=0.0, seed=None,):
     if seed is not None:
         random.seed(seed)
-        
+     
     # --- 1. Split Agents based on Ratio ---
     num_incoming = int(num_agents * ratio)
     num_outgoing = num_agents - num_incoming
@@ -101,9 +101,14 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
         f.write("# width height depth\n")
         f.write(f"{w} {h} {d}\n")
         
-        f.write("# obstacles (x y z)\n")
+        f.write("# obstacles (O x y z)\n")
         for obs in obstacles:
-            f.write(f"{obs[0]} {obs[1]} {obs[2]}\n")
+            f.write(f"O {obs[0]} {obs[1]} {obs[2]}\n")
+            
+        f.write("# pads (P x y z)\n")
+        # Use set(pads) to ensure we write unique pad coordinates, 
+        for pad in set(pads):
+            f.write(f"P {pad[0]} {pad[1]} {pad[2]}\n")
         
     # --- 6. Write Scenario File ---
     os.makedirs(os.path.dirname(scen_file), exist_ok=True)
@@ -116,20 +121,32 @@ def generate_scenario(w, h, d, num_agents, map_file, scen_file, spacing=2, chimn
         inc_spawn_times = {}
         for i in range(num_incoming):
             sx, sy, sz = incoming_starts[i]
-            gx, gy, gz = incoming_goals[i]
+            
+            # Apply dynamic probability for incoming (no goal)
+            if random.random() < dynamic_prob_in:
+                gx, gy, gz = -1, -1, -1
+            else:
+                gx, gy, gz = incoming_goals[i]
             
             current_time = inc_spawn_times.get((sx, sy, sz), 0)
-            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} {delay} {current_time}\n")
+            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} {delay} {current_time} 1\n")
             inc_spawn_times[(sx, sy, sz)] = current_time + incoming_stagger
             
         out_spawn_times = {}
         for i in range(num_outgoing):
-            sx, sy, sz = outgoing_starts[i]
+            # Apply dynamic probability for outgoing (no start)
+            if random.random() < dynamic_prob_out:
+                sx, sy, sz = -1, -1, -1
+            else:
+                sx, sy, sz = outgoing_starts[i]
+                
             gx, gy, gz = outgoing_goals[i]
             
-            current_time = out_spawn_times.get((sx, sy, sz), 0)
-            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} 0 {current_time}\n")
-            out_spawn_times[(sx, sy, sz)] = current_time + stagger
+            original_sx, original_sy, original_sz = outgoing_starts[i]
+            current_time = out_spawn_times.get((original_sx, original_sy, original_sz), 0)
+            
+            f.write(f"{sx} {sy} {sz} {gx} {gy} {gz} 0 {current_time} 0\n")
+            out_spawn_times[(original_sx, original_sy, original_sz)] = current_time + stagger
             
     print(f"Generated {num_agents}-drone scenario ({num_incoming} in, {num_outgoing} out) on {w}x{h}x{d} map.")
     print(f"Chimney Height: {chimney_height} (Total Obstacles: {len(obstacles)})")
@@ -149,7 +166,9 @@ if __name__ == "__main__":
     parser.add_argument("--delay", type=int, default=5, help="Timesteps incoming drones occupy the pad before disappearing")
     parser.add_argument("--config", type=str, choices=["any", "faces", "vent"], default="any", help="Perimeter spawn setup")
     parser.add_argument("--stagger", type=int, default=0, help="Timesteps between drone spawns")
+    parser.add_argument("--dynamic_prob_in", type=float, default=0.0, help="Probability (0.0 to 1.0) that an incoming drone's goal is unassigned")
+    parser.add_argument("--dynamic_prob_out", type=float, default=0.0, help="Probability (0.0 to 1.0) that an outgoing drone's start is unassigned")
     parser.add_argument("--seed", type=int, default=72, help="Random seed for reproducibility")
     
     args = parser.parse_args()
-    generate_scenario(args.width, args.height, args.depth, args.agents, args.map, args.scen, args.spacing, args.chimneys, args.ratio, args.delay, args.config, args.stagger, args.seed)
+    generate_scenario(args.width, args.height, args.depth, args.agents, args.map, args.scen, args.spacing, args.chimneys, args.ratio, args.delay, args.config, args.stagger, args.dynamic_prob_in, args.dynamic_prob_out, args.seed)

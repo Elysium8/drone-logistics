@@ -20,6 +20,7 @@ public:
         Environment* env = nullptr; 
 
         while (std::getline(file, line)) {
+            // Skips empty lines and comments
             if (line.empty() || line[0] == '#') continue; 
 
             std::stringstream ss(line);
@@ -28,9 +29,15 @@ public:
                 env = new Environment(w, h, d);
                 dims_read = true;
             } else {
-                int ox, oy, oz;
-                ss >> ox >> oy >> oz;
-                env->set_obstacle({ox, oy, oz}); 
+                char type;
+                int x, y, z;
+                ss >> type >> x >> y >> z;
+                
+                if (type == 'O') {
+                    env->set_obstacle({x, y, z});
+                } else if (type == 'P') {
+                    env->add_pad({x, y, z});
+                }
             }
         }
         

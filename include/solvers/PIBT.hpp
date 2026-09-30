@@ -65,15 +65,17 @@ public:
     std::vector<std::vector<Location>> paths {};
     std::vector<bool> reached_goal {};
     int n {};
-    template <typename ExpanderType, typename HeuristicType>
+    template <typename ExpanderType, typename HeuristicType, typename PlannerType>
     bool solve(const Environment &env,
                const MAPFInstance &instance,
                const ExpanderType &expander,
                const HeuristicType &heuristic,
+               PlannerType &planner,
                SearchMetrics &metrics) 
     {
         Timer timer;
         int MAX_TIMESTEPS {1000}; // should update to reflect map size/complexity 
+
         std::vector<float> initial_priorities {};
         std::vector<float> current_priorities {};
         n = instance.starts.size();
@@ -108,6 +110,10 @@ public:
                 
             }
             for (int a=0; a<n; a++) {
+                if (instance.start_times[a] == t && paths[a][t].x == -1) {
+                    auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
+                    paths[a][t] = start_loc; 
+                }
                 if (reached_goal[a] || paths[a][t].x == -1) continue;
                 if (paths[a][t] == instance.goals[a]) {
                     current_priorities[a] = initial_priorities[a];
