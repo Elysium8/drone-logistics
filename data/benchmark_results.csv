@@ -74,3 +74,39 @@ Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,863433,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,565,119376,146119,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,565,119376,149652,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,922749,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,861538,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,81422,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,90642,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,84374,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,70629,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,71794,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,72668,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,350,1,352,61775,34536,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,573,120300,231523,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,1.15669e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.79064e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.79348e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.36676e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,4.00944e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.354e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.29675e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,750,1,756,285375,2.66856e+06,0,0,0,0

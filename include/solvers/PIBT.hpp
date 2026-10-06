@@ -130,6 +130,15 @@ public:
                 }
             }
             // sort agents by priorty
+
+            // Dynamic reordering idea
+            for (int i = 0; i < n; i++) {
+                float h_val = heuristic.get_h_value(paths[i][t], instance.goals[i]);
+                float tiebreak = (float)i / (float)n;
+                float priority = 1.0f / (h_val + 2.0f + tiebreak);
+                current_priorities[i] = priority;
+            }
+            
             std::vector<size_t> sorted_priorities(n);
             std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
             std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&current_priorities](size_t left, size_t right) {
