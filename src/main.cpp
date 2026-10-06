@@ -156,6 +156,7 @@ int main(int argc, char *argv[])
                   << metrics.solved << ","
                   << metrics.makespan << ","
                   << metrics.path_cost << ","
+                  << metrics.longest_path << ","
                   << metrics.runtime_us << ","
                   << metrics.ll_nodes_generated << ","
                   << metrics.ll_nodes_expanded << ","

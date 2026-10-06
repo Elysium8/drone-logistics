@@ -33,6 +33,7 @@ struct SearchMetrics
     double runtime_us = 0;
     int path_cost = 0;
     int makespan = 0;
+    int longest_path = 0;
     bool solved = false;
     std::vector<std::vector<Location>> paths;
 };

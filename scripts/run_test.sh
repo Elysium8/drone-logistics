@@ -12,6 +12,7 @@ SCEN_FILE=""
 GEN_ARGS=""
 OUT_FILE="data/output_paths.json"
 CSV_FILE="data/benchmark_results.csv"
+PROFILE_MODE=0
 
 # 3. Parse Command Line Arguments
 while [[ "$#" -gt 0 ]]; do
@@ -21,6 +22,7 @@ while [[ "$#" -gt 0 ]]; do
         -m) MAP_FILE="$2"; shift ;;
         -s) SCEN_FILE="$2"; shift ;;
         --gen) GEN_ARGS="$2"; shift ;;
+        --profile) PROFILE_MODE=1 ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -53,12 +55,17 @@ make -C build > /dev/null
 
 # 7. Ensure CSV headers exist
 if [ ! -f "$CSV_FILE" ]; then
-    echo "map_file,scen_file,solver,agents,solved,path_cost,runtime_us,nodes_generated" > "$CSV_FILE"
+    echo "map_file,scen_file,solver,agents,solved,makespan,path_cost, longest_path, runtime_us,ll_nodes_generated, ll_nodes_expanded, hl_nodes_generated, hl_nodes_expanded" > "$CSV_FILE"
 fi
 
 # 8. Run the Solver
-echo "--- Running $HL_SOLVER with $LL_SOLVER ---"
-./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" | tee -a "$CSV_FILE"
+if [ "$PROFILE_MODE" -eq 1 ]; then
+    echo "--- Profiling $HL_SOLVER with $LL_SOLVER ---"
+    valgrind --tool=callgrind ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" | tee -a "$CSV_FILE"
+else
+    echo "--- Running $HL_SOLVER with $LL_SOLVER ---"
+    ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" | tee -a "$CSV_FILE"
+fi
 
 # 9. Visualize
 echo "--- Launching Visualizer ---"
