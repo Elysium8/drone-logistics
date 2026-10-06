@@ -35,3 +35,42 @@ data/gen_map.txt,data/gen_scen.txt,pibt-astar,800,0,0,0,651843,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,600,1,614,142470,146912,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,300,0,0,0,52380,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,217,16698,6321,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,573,120300,557530,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,567,119662,156503,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,567,119662,313684,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,74,15456,70784,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,950,0,0,0,8.55028e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,150,1,160,9396,4151,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,104,25455,46594,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,64,17861,144108,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,542398,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,838773,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,841373,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,821499,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,50,1,52,1325,636,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,100,1,104,5350,4024,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,25,1,30,425,191,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,25,1,29,400,175,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,16,1,19,168,69,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,9,1,12,63,42,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,9,1,12,63,27,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,9,1,12,63,32,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,863433,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,565,119376,146119,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,565,119376,149652,0,0,0,0

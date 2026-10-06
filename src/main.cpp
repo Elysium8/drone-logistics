@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     std::string map_file = "";
     std::string scen_file = "";
     std::string out_file = "";
-    // Default stack
+    // Default stackx
     std::string hl_solver = "pp";
     std::string ll_solver = "astar";
     int num_agents = 1000000;
