@@ -167,6 +167,9 @@ public:
                         occupied_at_t[idx] = a;
                     } else {
                         instance.start_times[a] = new_start_time; 
+                        while (paths[a].size() <= new_start_time) {
+                            paths[a].push_back({-1, -1, -1});
+                        }
                     }
                 }
                 
