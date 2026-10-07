@@ -24,7 +24,7 @@ Returns: A start location and a start time
 
     */
     Location plan_one_agent_goal() {
-
+        return {-1, -1, -1};
 
     };
 

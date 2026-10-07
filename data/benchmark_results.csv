@@ -58,3 +58,30 @@ Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,572,121239,281,23860,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,77,14449,64,9291,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,77,14449,64,12851,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,205,20900,190,9591,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,205,20900,190,9733,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,205,20900,190,10549,0,0,0,0
+anything?
+anything?
+anything?
+anything?
+made it into loop?
+anything?
+succeeded?
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,200,1,217,16679,91,20675,0,0,0,0
+anything?
+succeeded?
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,216,6.02139e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,364,6.04144e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,216,5.66981e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,216,5.56108e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,550,2.72523e+06,0,0,0,0
