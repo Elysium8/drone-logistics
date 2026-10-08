@@ -8,13 +8,14 @@
 #include <numeric>
 #include <iostream>
 
-class PIBT {
+class PIBT_naive {
 private:
     template <typename ExpanderType, typename HeuristicType>
     __attribute__((noinline))
     bool solve_one_agent(int a_i, int a_j, int t, const Environment &env, const MAPFInstance &instance, const ExpanderType &expander, 
                          const HeuristicType &heuristic, std::vector<int>& occupied_at_t, std::vector<int>& claimed_next) {
-        
+        if (t == 8 && a_i == 0) 
+            {std::cout << "here";}
         // CRITICAL FIX: If the agent hasn't spawned yet, safely pad its path and exit 
         // without attempting any array lookups or grid operations.
         if (paths[a_i][t].x == -1) {
@@ -97,28 +98,20 @@ public:
 
 
         n = instance.starts.size();
-
-        // std::vector<float> initial_priorities {};
-        // std::vector<float> current_priorities {};
-        std::vector<int> frustration(n, 0);
-        std::vector<float> current_h_vals(n, 0.0f);
+        std::vector<float> initial_priorities {};
+        std::vector<float> current_priorities {};
         paths.resize(n);
         reached_goal.assign(n, false);
-        // for (int i = 0; i < n; i++) {
-        //     paths[i].insert(paths[i].begin(), instance.start_times[i], {-1, -1, -1});
-        //     paths[i].push_back(instance.starts[i]);
-        //     float h_val = heuristic.get_h_value(instance.starts[i], instance.goals[i]);
-        //     float tiebreak = (float)i / (float)n;
-        //     float start_priority = 1.0f / (h_val + 2.0f + tiebreak);
-        //     initial_priorities.push_back(start_priority);
-        //     current_priorities.push_back(start_priority);
-        // }
-
         for (int i = 0; i < n; i++) {
             paths[i].insert(paths[i].begin(), instance.start_times[i], {-1, -1, -1});
             paths[i].push_back(instance.starts[i]);
-            current_h_vals[i] = heuristic.get_h_value(instance.starts[i], instance.goals[i]);
+            float h_val = heuristic.get_h_value(instance.starts[i], instance.goals[i]);
+            float tiebreak = (float)i / (float)n;
+            float start_priority = 1.0f / (h_val + 2.0f + tiebreak);
+            initial_priorities.push_back(start_priority);
+            current_priorities.push_back(start_priority);
         }
+
 
         int total_cells = env.get_width() * env.get_height() * env.get_depth();
 
@@ -183,98 +176,52 @@ public:
                 }
             }
 
-            // for (int a=0; a<n; a++) {
-            //     if (instance.start_times[a] == t && paths[a][t].x == -1) {
-            //         auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
-                    
-            //         if (start_loc.x != -1) {
-            //             paths[a][t] = start_loc; 
-            //             instance.starts[a] = start_loc;
-                        
-            //             // Seed newly spawned agents directly into the O(1) occupier lookup
-            //             int idx = env.get_index(start_loc);
-            //             occupied_at_t[idx] = a;
-            //         } else {
-            //             instance.start_times[a] = new_start_time; 
-            //             while (paths[a].size() <= new_start_time) {
-            //                 paths[a].push_back({-1, -1, -1});
-            //             }
-            //         }
-            //     }
-                
-            //     if (reached_goal[a] || paths[a][t].x == -1) continue;
-            //     if (paths[a][t] == instance.goals[a]) {
-            //         current_priorities[a] = initial_priorities[a];
-            //     }
-            //     else {
-            //         current_priorities[a] += 1;
-            //     }
-            // }
-
-            // for (int i = 0; i < n; i++) {
-            // // Short-circuit to skip expensive heuristic updates for finished or unspawned agents
-            // if (reached_goal[i] || paths[i].size() <= t || paths[i][t].x == -1) continue; 
-            
-            // float h_val = heuristic.get_h_value(paths[i][t], instance.goals[i]);
-            // float tiebreak = (float)i / (float)n;
-            // float priority = 1.0f / (h_val + 2.0f + tiebreak);
-            // current_priorities[i] = priority;
-            // }
-
-
-            for (int i = 0; i < n; i++) {
-                // 1. Spawn logic
-                if (instance.start_times[i] == t && paths[i][t].x == -1) {
+            for (int a=0; a<n; a++) {
+                if (instance.start_times[a] == t && paths[a][t].x == -1) {
                     auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
                     
                     if (start_loc.x != -1) {
-                        paths[i][t] = start_loc; 
-                        instance.starts[i] = start_loc;
-                        occupied_at_t[env.get_index(start_loc)] = i;
+                        paths[a][t] = start_loc; 
+                        instance.starts[a] = start_loc;
+                        
+                        // Seed newly spawned agents directly into the O(1) occupier lookup
+                        int idx = env.get_index(start_loc);
+                        occupied_at_t[idx] = a;
                     } else {
-                        instance.start_times[i] = new_start_time; 
+                        instance.start_times[a] = new_start_time; 
+                        while (paths[a].size() <= new_start_time) {
+                            paths[a].push_back({-1, -1, -1});
+                        }
                     }
                 }
                 
-                // 2. Skip finished or unspawned agents
-                if (reached_goal[i] || paths[i].size() <= t || paths[i][t].x == -1) continue;
-                
-                // 3. Update frustration
-                if (paths[i][t] == instance.goals[i]) {
-                    frustration[i] = 0;
-                } else {
-                    frustration[i] += 1;
+                if (reached_goal[a] || paths[a][t].x == -1) continue;
+                if (paths[a][t] == instance.goals[a]) {
+                    current_priorities[a] = initial_priorities[a];
                 }
-
-                // 4. Update dynamic priority (just store the heuristic directly)
-                current_h_vals[i] = heuristic.get_h_value(paths[i][t], instance.goals[i]);
+                else {
+                    current_priorities[a] += 1;
+                }
             }
-            
-            // std::vector<size_t> sorted_priorities(n);
-            // std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
-            // std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&current_priorities](size_t left, size_t right) {
-            //     return current_priorities[left] > current_priorities[right];
-            // });
+
+            // for (int i = 0; i < n; i++) {
+            //     // Short-circuit to skip expensive heuristic updates for finished or unspawned agents
+            //     if (reached_goal[i] || paths[i].size() <= t || paths[i][t].x == -1) continue; 
+                
+            //     float h_val = heuristic.get_h_value(paths[i][t], instance.goals[i]);
+            //     float tiebreak = (float)i / (float)n;
+            //     float priority = 1.0f / (h_val + 2.0f + tiebreak);
+            //     current_priorities[i] = priority;
+            // }
+
+
             
             std::vector<size_t> sorted_priorities(n);
             std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
-
-            std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&](size_t left, size_t right) {
-                // Primary: Dynamic Priority (closer to goal is better)
-                // We use a small epsilon (1e-5) to handle float precision, allowing exact ties to fall through to frustration
-                if (std::abs(current_h_vals[left] - current_h_vals[right]) > 1e-5) {
-                    return current_h_vals[left] < current_h_vals[right]; 
-                }
-                
-                // Secondary: Frustration (higher frustration is better)
-                if (frustration[left] != frustration[right]) {
-                    return frustration[left] > frustration[right];
-                }
-                
-                // Tertiary: Agent ID (matches your original (float)i / (float)n logic where lower ID = better)
-                return left < right;
+            std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&current_priorities](size_t left, size_t right) {
+                return current_priorities[left] > current_priorities[right];
             });
-
+            
             for (const int a_i : sorted_priorities) {
                 if (paths[a_i].size() < t+2 && !reached_goal[a_i]) {
                     solve_one_agent(a_i, -1, t, env, instance, expander, heuristic, occupied_at_t, claimed_next);

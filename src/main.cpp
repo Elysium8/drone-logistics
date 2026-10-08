@@ -13,6 +13,8 @@
 #include "../include/solvers/PrioritizedPlanning.hpp"
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
+#include "../include/solvers/PIBT_naive.hpp"
+
 
 // Low-Level Components
 #include "../include/solvers/CBSConstraints.hpp" // For ConstraintTable
@@ -156,7 +158,9 @@ int main(int argc, char *argv[])
                   << metrics.solved << ","
                   << metrics.makespan << ","
                   << metrics.path_cost << ","
+                  << metrics.path_cost_squared << ","
                   << metrics.longest_path << ","
+                  << metrics.total_movement << ","
                   << metrics.runtime_us << ","
                   << metrics.ll_nodes_generated << ","
                   << metrics.ll_nodes_expanded << ","

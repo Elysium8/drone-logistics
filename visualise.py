@@ -16,11 +16,10 @@ def generate_color(index, total):
     return tuple(int(c * 255) for c in rgb)
 
 def load_map(filepath):
-    """Parses the C++ map.txt file to get dimensions and obstacles."""
     with open(filepath, 'r') as f:
         lines = f.readlines()
     
-    dims = (10, 10, 5) # fallback defaults
+    dims = (10, 10, 5) 
     obstacles = []
     dims_read = False
     
@@ -29,12 +28,15 @@ def load_map(filepath):
         if not line or line.startswith("#"):
             continue
         parts = line.split()
-        if len(parts) == 3:
-            if not dims_read:
-                dims = (int(parts[0]), int(parts[1]), int(parts[2]))
-                dims_read = True
-            else:
-                obstacles.append((int(parts[0]), int(parts[1]), int(parts[2])))
+        
+        # 1. Parse Dimensions
+        if not dims_read and len(parts) == 3:
+            dims = (int(parts[0]), int(parts[1]), int(parts[2]))
+            dims_read = True
+            
+        # 2. Parse Obstacles
+        elif len(parts) == 4 and parts[0] == 'O':
+            obstacles.append((int(parts[1]), int(parts[2]), int(parts[3])))
                 
     return dims, obstacles
 

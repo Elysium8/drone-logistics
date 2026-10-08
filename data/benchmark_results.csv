@@ -1,4 +1,4 @@
-map_file,scen_file,solver,agents,solved,makespan,path_cost, longest_path, runtime_us,ll_nodes_generated, ll_nodes_expanded, hl_nodes_generated, hl_nodes_expanded
+map_file,scen_file,solver,agents,solved,makespan,path_cost, sum_path_cost_squared, longest_path, total_movement, runtime_us,ll_nodes_generated, ll_nodes_expanded, hl_nodes_generated, hl_nodes_expanded
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,500,1,504,126750,496,41168,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,500,1,504,126750,496,40022,0,0,0,0
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,50,1,55,1475,51,507,0,0,0,0
@@ -85,3 +85,38 @@ Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,216,5.56108e+06,0,0,0,0
 Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,550,2.72523e+06,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,77,14449,64,66233,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,364,1.07904e+07,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,216,590376,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,153725,364,634605,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,94974,215,613824,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,94974,0,215,575697,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,94974,18664238,215,596771,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,95006,18892008,363,657043,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,95006,18892008,363,6158,680906,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,94974,18664238,215,33954,581280,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,95006,18892008,363,6158,703646,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,550,1,555,95006,18676670,215,6162,676037,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,35,1,43,764,18494,33,275,152,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,827,29289,50,332,183,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,827,29289,50,332,207,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,827,29289,50,332,246,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,722,20714,36,332,253,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,722,20714,36,332,296,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,51,722,20714,36,332,171,0,0,0,0
+heredata/gen_map.txt,data/gen_scen.txt,pibt-astar,41,1,48,722,13684,25,332,1050,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,2000,1,2023,2043018,-1543908740,2013,110654,1.40931e+06,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,290521,0,0,0,0

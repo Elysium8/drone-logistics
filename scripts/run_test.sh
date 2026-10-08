@@ -55,7 +55,7 @@ make -C build > /dev/null
 
 # 7. Ensure CSV headers exist
 if [ ! -f "$CSV_FILE" ]; then
-    echo "map_file,scen_file,solver,agents,solved,makespan,path_cost, longest_path, runtime_us,ll_nodes_generated, ll_nodes_expanded, hl_nodes_generated, hl_nodes_expanded" > "$CSV_FILE"
+    echo "map_file,scen_file,solver,agents,solved,makespan,path_cost, path_cost_squared, longest_path, runtime_us,ll_nodes_generated, ll_nodes_expanded, hl_nodes_generated, hl_nodes_expanded" > "$CSV_FILE"
 fi
 
 # 8. Run the Solver
