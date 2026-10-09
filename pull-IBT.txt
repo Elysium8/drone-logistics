@@ -1,0 +1,45 @@
+
+
+function solve_one_agent()
+
+
+function compute_priority_chain(agent_i, cur_location, agents, frustrations,heuristic_fn, cache=[]):
+    if len(cache) == 0: 
+        cache = [0]*n 
+    chain_frustration = 0 
+    for neighbour in neighbouring cells:
+        if neighbouring cell is occupied by an agent (agent_j): 
+            if heuristic_fn(neighbouring_cell, goals[agent_j]) > heuristic_fn(cur_location, goals[agent_j]):  #should this be >=?
+                neighbour_frustration = compute_priority_chain(agent_j, neighbouring_cell, agents, frustrations, cache)
+                chain_frustration = max(chain_frustration, neighbour_frustration)
+    return some_function(frustrations[agent_i], heuristic_fn(agent_i,goals[agent_i]) + chain_frustration
+
+    
+
+function pull_ibt(agents, starts, goals, heuristic_fn)
+    n = len(agents)
+    tiebreak_priorities = []
+    initial_frustration = [0]*n
+    for each agent:
+        assign a unique tiebreaking epsilon as initial priority # since this is done at the start we can do it by some smart heuristic
+    frustrations = [0 for each agent]
+
+    for timestep t from 0 to MAX_TIMESTEP
+        ordered_agents <- order agents by heuristic_fn(current, goal)
+        if there exists a tie between the heuristic ordering of two agents then tiebreak by initial_priorities: 
+        for agent in ordered_agents:
+            solve_one_agent(agent)
+            if solve_one_agent: # if the agent moved
+                for each neighbour that would like to move into that agent's vacated square:
+                    compute_priority_chain(neighbour, neighbour_location, agents, frustrations, heuristic_fn)
+
+
+
+
+Two ideas:
+
+1) Dynamically reprioritise at every timestep and use the chains for tiebreaking 
+2) Compute the pibt steps for every agent (i.e their preferred single move) and where conflict would exist tiebreak priority on 
+   the chains. Then recompute the priority with that in mind.
+3) Some potentially weighted combination of the two - some_function
+4) Just use frustration but have frustration grow faster the closer an agent is to their goal - some_function
