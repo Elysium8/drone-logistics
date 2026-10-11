@@ -120,3 +120,14 @@ Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,2000,1,2023,2043018,-1543908740,2013,110654,1.40931e+06,0,0,0,0
 Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,290521,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,335319,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,305907,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,400,1,406,81788,21941492,397,7982,31170,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,18349,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,400,1,406,81788,21941492,397,7982,32240,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,23928,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,18535,0,0,0,0

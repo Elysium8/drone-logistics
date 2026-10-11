@@ -55,6 +55,7 @@ private:
             if (occupier != -1 && !reached_goal[occupier] && paths[occupier].size() == t + 1) {
                 if (!solve_one_agent(occupier, a_i, t, env, instance, expander, heuristic, occupied_at_t, claimed_next)) {
                     paths[a_i].pop_back();
+                    claimed_next[n_idx] = -1;
                     continue;
                 }
             }
@@ -233,6 +234,9 @@ public:
                         occupied_at_t[env.get_index(start_loc)] = i;
                     } else {
                         instance.start_times[i] = new_start_time; 
+                        while (paths[i].size() <= new_start_time) {
+                            paths[i].push_back({-1, -1, -1});
+                        }
                     }
                 }
                 
@@ -281,7 +285,6 @@ public:
                 }
             }
         }
-        
         metrics.solved = false;
         metrics.runtime_us = timer.elapsed_microseconds();
         metrics.paths = paths;    
