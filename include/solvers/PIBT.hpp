@@ -17,6 +17,10 @@ private:
         
         // CRITICAL FIX: If the agent hasn't spawned yet, safely pad its path and exit 
         // without attempting any array lookups or grid operations.
+        if (a_i == 198 && t == 12) {
+            std::cout << "here";
+
+        }
         if (paths[a_i][t].x == -1) {
             paths[a_i].push_back(paths[a_i][t]);
             return false;
@@ -55,7 +59,7 @@ private:
             if (occupier != -1 && !reached_goal[occupier] && paths[occupier].size() == t + 1) {
                 if (!solve_one_agent(occupier, a_i, t, env, instance, expander, heuristic, occupied_at_t, claimed_next)) {
                     paths[a_i].pop_back();
-                    claimed_next[n_idx] = -1;
+                    claimed_next[n_idx] = occupier;
                     continue;
                 }
             }
@@ -93,27 +97,14 @@ public:
         Timer timer;
         int MAX_TIMESTEPS {4500}; 
 
-        
-
-
+    
 
         n = instance.starts.size();
-
-        // std::vector<float> initial_priorities {};
-        // std::vector<float> current_priorities {};
         std::vector<int> frustration(n, 0);
         std::vector<float> current_h_vals(n, 0.0f);
         paths.resize(n);
         reached_goal.assign(n, false);
-        // for (int i = 0; i < n; i++) {
-        //     paths[i].insert(paths[i].begin(), instance.start_times[i], {-1, -1, -1});
-        //     paths[i].push_back(instance.starts[i]);
-        //     float h_val = heuristic.get_h_value(instance.starts[i], instance.goals[i]);
-        //     float tiebreak = (float)i / (float)n;
-        //     float start_priority = 1.0f / (h_val + 2.0f + tiebreak);
-        //     initial_priorities.push_back(start_priority);
-        //     current_priorities.push_back(start_priority);
-        // }
+
 
         for (int i = 0; i < n; i++) {
             paths[i].insert(paths[i].begin(), instance.start_times[i], {-1, -1, -1});
@@ -124,6 +115,7 @@ public:
         int total_cells = env.get_width() * env.get_height() * env.get_depth();
 
         for (int t=0; t < MAX_TIMESTEPS; t++) {
+            
             if (std::all_of(reached_goal.begin(), reached_goal.end(), [](bool v) { return v;})) {
                 metrics.paths = paths;
                 metrics.runtime_us = timer.elapsed_microseconds();
@@ -184,44 +176,6 @@ public:
                 }
             }
 
-            // for (int a=0; a<n; a++) {
-            //     if (instance.start_times[a] == t && paths[a][t].x == -1) {
-            //         auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
-                    
-            //         if (start_loc.x != -1) {
-            //             paths[a][t] = start_loc; 
-            //             instance.starts[a] = start_loc;
-                        
-            //             // Seed newly spawned agents directly into the O(1) occupier lookup
-            //             int idx = env.get_index(start_loc);
-            //             occupied_at_t[idx] = a;
-            //         } else {
-            //             instance.start_times[a] = new_start_time; 
-            //             while (paths[a].size() <= new_start_time) {
-            //                 paths[a].push_back({-1, -1, -1});
-            //             }
-            //         }
-            //     }
-                
-            //     if (reached_goal[a] || paths[a][t].x == -1) continue;
-            //     if (paths[a][t] == instance.goals[a]) {
-            //         current_priorities[a] = initial_priorities[a];
-            //     }
-            //     else {
-            //         current_priorities[a] += 1;
-            //     }
-            // }
-
-            // for (int i = 0; i < n; i++) {
-            // // Short-circuit to skip expensive heuristic updates for finished or unspawned agents
-            // if (reached_goal[i] || paths[i].size() <= t || paths[i][t].x == -1) continue; 
-            
-            // float h_val = heuristic.get_h_value(paths[i][t], instance.goals[i]);
-            // float tiebreak = (float)i / (float)n;
-            // float priority = 1.0f / (h_val + 2.0f + tiebreak);
-            // current_priorities[i] = priority;
-            // }
-
 
             for (int i = 0; i < n; i++) {
                 // 1. Spawn logic
@@ -253,13 +207,7 @@ public:
                 // 4. Update dynamic priority (just store the heuristic directly)
                 current_h_vals[i] = heuristic.get_h_value(paths[i][t], instance.goals[i]);
             }
-            
-            // std::vector<size_t> sorted_priorities(n);
-            // std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
-            // std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&current_priorities](size_t left, size_t right) {
-            //     return current_priorities[left] > current_priorities[right];
-            // });
-            
+
             std::vector<size_t> sorted_priorities(n);
             std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
 

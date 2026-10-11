@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         int actual_agents = instance.starts.size();
 
         ManhattanExpander expander;
-        ManhattanHeuristic heuristic;
+        TrueDistanceHeuristic<ManhattanExpander> heuristic(env, instance.goals, expander);
         SearchMetrics metrics;
         SafePlanner planner; 
         // ==========================================
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
         if (hl_solver == "pibt") {
             PIBT solver;
-            solver.solve<ManhattanExpander, ManhattanHeuristic, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
         else if (hl_solver == "cbs")
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
             if (ll_solver == "astar")
             {
                 // Compile A* specifically for CBS Constraints
-                SpaceTimeAStar<ManhattanExpander, ConstraintTable, ManhattanHeuristic> ll;
+                SpaceTimeAStar<ManhattanExpander, ConstraintTable, TrueDistanceHeuristic<ManhattanExpander>> ll;
                 solver.solve(env, instance, expander, heuristic, ll, metrics);
             }
             else if (ll_solver == "sipp")
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
             if (ll_solver == "astar")
             {
                 // Compile A* specifically for PP Reservations
-                SpaceTimeAStar<ManhattanExpander, ReservationTable, ManhattanHeuristic> ll;
+                SpaceTimeAStar<ManhattanExpander, ReservationTable, TrueDistanceHeuristic<ManhattanExpander>> ll;
                 solver.solve(env, instance, expander, heuristic, ll, metrics);
             }
             else if (ll_solver == "sipp")

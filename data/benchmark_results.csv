@@ -131,3 +131,36 @@ Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt-astar,400,1,406,81788,21941492,397,7982,32240,0,0,0,0
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,23928,0,0,0,0
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,18535,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,169866,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,160215,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,1,58,1208,44150,57,1201,2234,0,0,0,0
+hereinstances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,136837,0,0,0,0
+hereinstances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,0,0,0,0,0,0,143287,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,40,1,74,1278,50688,73,1259,3393,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt-astar,100,1,77,3793,179237,76,3651,9265,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_300.scen,pibt-astar,300,1,119,12193,675261,118,11146,33688,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_300.scen,pibt-astar,300,1,119,12193,675261,118,11146,32916,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_300.scen,pibt-astar,300,1,111,12638,724702,110,11550,30158,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,162,36666,3197884,161,29275,80030,0,0,0,0
+hereinstances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,170,37165,3358161,169,29277,96291,0,0,0,0
+hereValidation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,1.70933e+06,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,187,38989,3808809,186,30285,103827,0,0,0,0
+hereValidation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,2.26921e+06,0,0,0,0
+hereValidation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt-astar,1000,1,1030,528532,362006516,1021,52248,1.70399e+06,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,187,38989,3808809,186,30285,99439,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,162,36666,3197884,161,29275,90304,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,187,38989,3808809,186,30285,99410,0,0,0,0

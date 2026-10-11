@@ -1,0 +1,5 @@
+
+
+- Need to make sure heuristics in PIBT etc aren't evaluated for unspawned agents 
+
+- Need a good suite of testing tools that I can run easily when I make a change. Suppose it should test all algorithms, a series of different maps etc 
