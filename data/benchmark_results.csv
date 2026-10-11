@@ -164,3 +164,23 @@ hereValidation: SUCCESS
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,162,36666,3197884,161,29275,90304,0,0,0,0
 hereValidation: SUCCESS
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_600.scen,pibt-astar,600,1,187,38989,3808809,186,30285,99410,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,122,18853,1232249,121,16299,49874,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,122,18853,1232249,121,16299,53171,0,0,0,0
+hereValidation: SUCCESS
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,46652,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,47762,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,47189,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,45412,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,45523,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,44025,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt-astar,400,1,138,19574,1355958,137,16913,48787,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt_dynamic-astar,400,1,122,18853,1232249,121,16299,50097,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt_frustration-astar,400,1,138,19574,1355958,137,16913,45403,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_300.scen,pibt_dynamic-astar,300,1,119,12193,675261,118,11146,33877,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_300.scen,pibt_frustration-astar,300,1,111,12638,724702,110,11550,29672,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_200.scen,pibt_dynamic-astar,200,1,95,7569,377507,94,7262,20431,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_200.scen,pibt_frustration-astar,200,1,102,7666,387942,101,7302,18830,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt_dynamic-astar,100,1,77,3793,179237,76,3651,9684,0,0,0,0
+instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_100.scen,pibt_frustration-astar,100,1,75,3769,174953,74,3649,9154,0,0,0,0

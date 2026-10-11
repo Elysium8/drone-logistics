@@ -17,10 +17,6 @@ private:
         
         // CRITICAL FIX: If the agent hasn't spawned yet, safely pad its path and exit 
         // without attempting any array lookups or grid operations.
-        if (a_i == 198 && t == 12) {
-            std::cout << "here";
-
-        }
         if (paths[a_i][t].x == -1) {
             paths[a_i].push_back(paths[a_i][t]);
             return false;

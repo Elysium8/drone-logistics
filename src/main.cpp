@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <fstream> // Added for file I/O
+
 #include "../include/types.hpp"
 #include "../include/Environment.hpp"
 #include "../include/Expanders.hpp"
@@ -15,7 +17,6 @@
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
 
-
 // Low-Level Components
 #include "../include/solvers/CBSConstraints.hpp" // For ConstraintTable
 #include "../include/ReservationTable.hpp"       // For PP's ReservationTable
@@ -25,13 +26,12 @@
 #include "../include/planners/RandomPlanner.hpp"
 #include "../include/planners/SafePlanner.hpp"
 
-
 // Validation
-#include "../include/test/SolutionValidator.hpp" // 
+#include "../include/test/SolutionValidator.hpp" 
 
 void print_usage()
 {
-    std::cout << "Usage: ./mapf_solver -m <map.txt> -s <scen.txt> [-a <num_agents>] [--out <paths.json>] [--hl <pp|cbs>] [--ll <astar|sipp>]\n";
+    std::cout << "Usage: ./mapf_solver -m <map.txt> -s <scen.txt> [-a <num_agents>] [--out <paths.json>] [--csv <results.csv>] [--hl <pp|cbs>] [--ll <astar|sipp>]\n";
 }
 
 int main(int argc, char *argv[])
@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
     std::string map_file = "";
     std::string scen_file = "";
     std::string out_file = "";
-    // Default stackx
+    std::string csv_file = "data/benchmark_results.csv"; // Default CSV name
+
+    // Default solvers
     std::string hl_solver = "pp";
     std::string ll_solver = "astar";
     int num_agents = 1000000;
@@ -55,6 +57,8 @@ int main(int argc, char *argv[])
             num_agents = std::stoi(argv[++i]);
         else if (arg == "--out" && i + 1 < argc)
             out_file = argv[++i];
+        else if (arg == "--csv" && i + 1 < argc)
+            csv_file = argv[++i];
         else if (arg == "--hl" && i + 1 < argc)
             hl_solver = argv[++i];
         else if (arg == "--ll" && i + 1 < argc)
@@ -79,22 +83,25 @@ int main(int argc, char *argv[])
         TrueDistanceHeuristic<ManhattanExpander> heuristic(env, instance.goals, expander);
         SearchMetrics metrics;
         SafePlanner planner; 
+        
         // ==========================================
         // SOLVER SELECTION MATRIX
         // ==========================================
-
-        if (hl_solver == "pibt") {
+        if (hl_solver == "pibt_dynamic") {
             PIBT solver;
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+
+        else if (hl_solver == "pibt_frustration") {
+            PIBT_naive solver;
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
         else if (hl_solver == "cbs")
         {
             CBS solver;
-
             if (ll_solver == "astar")
             {
-                // Compile A* specifically for CBS Constraints
                 SpaceTimeAStar<ManhattanExpander, ConstraintTable, TrueDistanceHeuristic<ManhattanExpander>> ll;
                 solver.solve(env, instance, expander, heuristic, ll, metrics);
             }
@@ -109,11 +116,9 @@ int main(int argc, char *argv[])
         }
         else if (hl_solver == "pp")
         {
-            PrioritizedPlanning solver; // No class template arguments required!
-
+            PrioritizedPlanning solver;
             if (ll_solver == "astar")
             {
-                // Compile A* specifically for PP Reservations
                 SpaceTimeAStar<ManhattanExpander, ReservationTable, TrueDistanceHeuristic<ManhattanExpander>> ll;
                 solver.solve(env, instance, expander, heuristic, ll, metrics);
             }
@@ -148,10 +153,24 @@ int main(int argc, char *argv[])
             PathExporter::export_paths_json(metrics.paths, out_file);
         }
 
-        // e.g., "cbs-astar" or "pp-astar"
         std::string combo_name = hl_solver + "-" + ll_solver;
 
-        std::cout << map_file << ","
+        // ==========================================
+        // WRITE DIRECTLY TO CSV
+        // ==========================================
+        
+        // Open file in append mode
+        std::ofstream csv_out(csv_file, std::ios::app);
+        if (csv_out.is_open())
+        {
+            // Check if file is completely empty, if so, write headers
+            csv_out.seekp(0, std::ios::end);
+            if (csv_out.tellp() == 0) {
+                csv_out << "map_file,scen_file,solver,agents,solved,makespan,path_cost,path_cost_squared,longest_path,total_movement,runtime_us,ll_nodes_generated,ll_nodes_expanded,hl_nodes_generated,hl_nodes_expanded\n";
+            }
+            // print metrics
+
+            std::cout << map_file << ","
                   << scen_file << ","
                   << combo_name << ","
                   << actual_agents << ","
@@ -166,6 +185,31 @@ int main(int argc, char *argv[])
                   << metrics.ll_nodes_expanded << ","
                   << metrics.hl_nodes_generated << ","
                   << metrics.hl_nodes_expanded << "\n";
+
+            // Append the metrics
+            csv_out << map_file << ","
+                    << scen_file << ","
+                    << combo_name << ","
+                    << actual_agents << ","
+                    << metrics.solved << ","
+                    << metrics.makespan << ","
+                    << metrics.path_cost << ","
+                    << metrics.path_cost_squared << ","
+                    << metrics.longest_path << ","
+                    << metrics.total_movement << ","
+                    << metrics.runtime_us << ","
+                    << metrics.ll_nodes_generated << ","
+                    << metrics.ll_nodes_expanded << ","
+                    << metrics.hl_nodes_generated << ","
+                    << metrics.hl_nodes_expanded << "\n";
+            
+            csv_out.close();
+            std::cout << "Metrics successfully appended to " << csv_file << "\n";
+        }
+        else
+        {
+            std::cerr << "Error: Could not open CSV file " << csv_file << " for writing.\n";
+        }
     }
     catch (const std::exception &e)
     {

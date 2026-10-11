@@ -14,8 +14,6 @@ private:
     __attribute__((noinline))
     bool solve_one_agent(int a_i, int a_j, int t, const Environment &env, const MAPFInstance &instance, const ExpanderType &expander, 
                          const HeuristicType &heuristic, std::vector<int>& occupied_at_t, std::vector<int>& claimed_next) {
-        if (t == 8 && a_i == 0) 
-            {std::cout << "here";}
         // CRITICAL FIX: If the agent hasn't spawned yet, safely pad its path and exit 
         // without attempting any array lookups or grid operations.
         if (paths[a_i][t].x == -1) {
