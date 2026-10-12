@@ -38,6 +38,13 @@ public:
 
         metrics.solved = true;
         metrics.path_cost = total_cost;
+        int max_len {0};
+                for (const auto& path : metrics.paths) {
+                    if (path.size() > max_len) {
+                        max_len = path.size();
+                    }
+                }
+                metrics.makespan = max_len;
         metrics.runtime_us = timer.elapsed_microseconds();
     }
 };
