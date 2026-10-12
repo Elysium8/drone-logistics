@@ -30,8 +30,26 @@ private:
             valid_neighbours++;
         }
         // Sort by Heuristic 
-        std::stable_sort(neighbours.begin(), neighbours.begin()+valid_neighbours, [&](const Location& a, const Location& b)
-                  {return heuristic.get_h_value(a, instance.goals[a_i]) < heuristic.get_h_value(b, instance.goals[a_i]);});
+        std::stable_sort(neighbours.begin(), neighbours.begin() + valid_neighbours, [&](const Location& a, const Location& b) {
+            float h_a = heuristic.get_h_value(a, instance.goals[a_i]);
+            float h_b = heuristic.get_h_value(b, instance.goals[a_i]);
+
+            // 1. Primary: Distance to goal (Heuristic)
+            if (std::abs(h_a - h_b) > 1e-5) {
+                return h_a < h_b;
+            }
+
+            // 2. Secondary (Tie-break): Presence of agents
+            // Prefer vertices that do NOT currently contain an agent
+            bool a_occupied = occupied_at_t[env.get_index(a)] != -1;
+            bool b_occupied = occupied_at_t[env.get_index(b)] != -1;
+
+            if (a_occupied != b_occupied) {
+                return !a_occupied; // Returns true (puts 'a' first) if 'a' is empty and 'b' is occupied
+            }
+
+            return false;
+        });
 
         for (int i = 0; i < valid_neighbours; i++) {
             // Swap conflict with the inheriting agent

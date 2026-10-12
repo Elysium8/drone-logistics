@@ -16,6 +16,8 @@
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
+#include "../include/solvers/PULL_IBT.hpp"
+
 
 // Low-Level Components
 #include "../include/solvers/CBSConstraints.hpp" // For ConstraintTable
@@ -94,6 +96,11 @@ int main(int argc, char *argv[])
 
         else if (hl_solver == "pibt_frustration") {
             PIBT_naive solver;
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+
+        else if (hl_solver == "pull_ibt") {
+            PULL_IBT solver;
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 

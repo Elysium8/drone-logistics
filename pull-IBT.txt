@@ -1,6 +1,20 @@
 
 
-function solve_one_agent()
+function solve_one_agent(a_i, a_j)
+    standard PIBT procedure:
+    C ← Neigh(πi[t]) ∪ {πi [t]}
+    sort C in increasing order of dist (u, gi) where u ∈ C  //tie-break: presence of agents
+    for v ∈ C do
+        if ∃ak ∈ A s.t. πk[t + 1] = v then continue //avoid vertex conflict
+        if aj 6= ⊥ ∧ πj [t] = v then continue //avoid swap conflict
+        πi[t + 1] ← v  // reserve
+        if ∃ak ∈ A s.t. πk[t] = v ∧ πk[t + 1] = ⊥ then
+            if PIBT(ak, ai) is invalid then continue  // replanning
+        end if
+        return valid
+    end for
+    πi [t + 1] ← πi[t]
+    return invalid
 
 
 function compute_priority_chain(agent_i, cur_location, agents, frustrations,heuristic_fn, cache=[]):
@@ -25,9 +39,10 @@ function pull_ibt(agents, starts, goals, heuristic_fn)
     frustrations = [0 for each agent]
 
     for timestep t from 0 to MAX_TIMESTEP
-        ordered_agents <- order agents by heuristic_fn(current, goal)
+        ordered_agents <- sort agents by heuristic_fn(current, goal)
         if there exists a tie between the heuristic ordering of two agents then tiebreak by initial_priorities: 
         for agent in ordered_agents:
+            if πi[t + 1] = ⊥ then solve_one_agent(ai, ⊥)
             solve_one_agent(agent)
             if solve_one_agent: # if the agent moved
                 for each neighbour that would like to move into that agent's vacated square:
