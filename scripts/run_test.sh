@@ -61,10 +61,10 @@ fi
 # 8. Run the Solver
 if [ "$PROFILE_MODE" -eq 1 ]; then
     echo "--- Profiling $HL_SOLVER with $LL_SOLVER ---"
-    valgrind --tool=callgrind ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" 
+    valgrind --tool=callgrind ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" | tee -a "$CSV_FILE"
 else
     echo "--- Running $HL_SOLVER with $LL_SOLVER ---"
-    ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" 
+    ./build/mapf_solver -m "$MAP_FILE" -s "$SCEN_FILE" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" | tee -a "$CSV_FILE"
 fi
 
 # 9. Visualize

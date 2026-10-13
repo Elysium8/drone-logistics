@@ -194,7 +194,7 @@ public:
 
             for (int a=0; a<n; a++) {
                 if (instance.start_times[a] == t && paths[a][t].x == -1) {
-                    auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
+                    auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, occupied_at_t, env.get_pads(), env);
                     
                     if (start_loc.x != -1) {
                         paths[a][t] = start_loc; 

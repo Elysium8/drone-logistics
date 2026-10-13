@@ -13,7 +13,7 @@ def generate_test_suite(suite_name="hive_out", parent_dir="tests"):
         (3, 3, 3),(4, 4, 4), (5,5,5), (6, 6, 6), (8, 8, 8), 
         (10, 10, 10), (12, 12, 12)
     ]
-    agent_counts = [10, 50, 100, 200, 500]
+    agent_counts = [200, 500, 1000]
     configs = ["any", "faces", "vent"]
     staggers = [1, 2, 3, 4, 6, 8, 10]
     

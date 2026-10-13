@@ -8,7 +8,26 @@ public:
 /*
 Arguments: Current agent positions and goals. Plus agents that are about to becoming "ready" to spawn (either incoming or outgoing)
 Returns: A start location and a start time
-*/
+*/  
+    // ==========================================
+    // NEW: O(1) Fast Path for PIBT Solvers
+    // ==========================================
+    std::tuple<Location, int> plan_one_agent_start(
+        int t, 
+        const std::vector<int>& occupied_at_t, 
+        const std::vector<Location>& pads,
+        const Environment& env) 
+    {
+        for (const auto &pad : pads) {
+            // Instant O(1) array lookup instead of looping over 100k agents
+            if (occupied_at_t[env.get_index(pad)] == -1) {
+                return {pad, t};
+            }
+        }
+        return {{-1, -1, -1}, t + 1};
+    }
+
+    
     std::tuple<Location, int> plan_one_agent_start(int t, const std::vector<std::vector<Location>>& paths, const MAPFInstance &instance, const std::vector<Location>& pads) {
         for (const auto &pad : pads) {
             bool safe = true;

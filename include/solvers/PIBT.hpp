@@ -194,7 +194,7 @@ public:
             for (int i = 0; i < n; i++) {
                 // 1. Spawn logic
                 if (instance.start_times[i] == t && paths[i][t].x == -1) {
-                    auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, paths, instance, env.get_pads());
+                    auto [start_loc, new_start_time] = planner.plan_one_agent_start(t, occupied_at_t, env.get_pads(), env);
                     
                     if (start_loc.x != -1) {
                         paths[i][t] = start_loc; 

@@ -7,14 +7,14 @@ cd "$(dirname "$0")/.."
 # 2. Default Variables
 LL_SOLVER=""
 PARENT_DIR=""
-OUT_FILE="data/output_paths.json"
-SOLVERS=("pibt_frustration" "pibt_dynamic" "pull_ibt")
+PROFILE_MODE=0
 
 # 3. Parse Command Line Arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --ll) LL_SOLVER="$2"; shift ;;
         --dir) PARENT_DIR="$2"; shift ;;
+        --profile) PROFILE_MODE=1 ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -23,7 +23,7 @@ done
 # 4. Validate Inputs
 if [ -z "$LL_SOLVER" ] || [ -z "$PARENT_DIR" ]; then
     echo "Error: You must provide --ll and --dir."
-    echo "Usage: ./scripts/run_suite.sh --ll <solver> --dir tests"
+    echo "Usage: ./scripts/run_suite.sh --ll <solver> --dir tests [--profile]"
     exit 1
 fi
 
@@ -57,43 +57,15 @@ for SUITE_DIR in "$PARENT_DIR"/*/; do
         continue
     fi
 
-    count=0
+    # 7. Execute the Native Runner (with or without profiling)
+    if [ "$PROFILE_MODE" -eq 1 ]; then
+        echo "  Running Valgrind Callgrind on $SUITE_DIR (this will take a while)..."
+        valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER"
+    else
+        ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER"
+    fi
 
-    for map_path in "${map_files[@]}"; do
-        filename=$(basename "$map_path")
-        base_name="${filename#map_}"
-        
-        scen_path_txt="$SUITE_DIR/scen_${base_name%.*}.txt"
-        scen_path_scen="$SUITE_DIR/scen_${base_name%.*}.scen"
-
-        if [ -f "$scen_path_txt" ]; then
-            scen_path="$scen_path_txt"
-        elif [ -f "$scen_path_scen" ]; then
-            scen_path="$scen_path_scen"
-        else
-            continue
-        fi
-        
-        for HL_SOLVER in "${SOLVERS[@]}"; do
-            ./build/mapf_solver -m "$map_path" -s "$scen_path" --out "$OUT_FILE" --hl "$HL_SOLVER" --ll "$LL_SOLVER" --csv "$CSV_FILE" > /dev/null
-        done
-        
-        count=$((count+1))
-
-        percent=$((count * 100 / total_maps))
-        filled=$((count * 50 / total_maps))
-        empty=$((50 - filled))
-        
-        bar=""
-        for ((i=0; i<filled; i++)); do bar+="#"; done
-        for ((i=0; i<empty; i++)); do bar+="-"; done
-        
-        printf "\r  Progress: [%s] %d%% (%d/%d)  " "$bar" "$percent" "$count" "$total_maps"
-    done
-
-    printf "\n--- Finished evaluating %d instances in %s ---\n" "$count" "$SUITE_DIR"
-
-    # 7. Calculate Aggregate Statistics and Generate Plots
+    # 8. Calculate Aggregate Statistics and Generate Plots
     python3 -c "
 import csv
 import sys
@@ -108,24 +80,25 @@ except ImportError:
 csv_file = '$CSV_FILE'
 suite_dir = '$SUITE_DIR'
 
-# Overall stats for the text table
 stats = defaultdict(lambda: {
     'total': 0, 'solved': 0, 'makespan': 0.0, 'runtime': 0.0,
     'path_cost': 0.0, 'path_cost_sq': 0.0, 'longest_path': 0.0, 'total_mvmt': 0.0, 
     'll_gen': 0.0, 'll_exp': 0.0, 'hl_gen': 0.0, 'hl_exp': 0.0
 })
 
-# Granular stats for plotting: solver -> agents -> metrics
 plot_data = defaultdict(lambda: defaultdict(lambda: {
     'total': 0, 'solved': 0, 'runtime': 0.0, 'path_cost': 0.0
 }))
 
 try:
+    if not os.path.exists(csv_file):
+        print('  No CSV generated. Skipping statistics.')
+        sys.exit(0)
+
     with open(csv_file, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
             solver = str(row.get('solver') or 'unknown').strip()
-            
             try:
                 agents = int(row.get('agents') or 0)
             except ValueError:
@@ -142,7 +115,6 @@ try:
                     runtime = float(row.get('runtime_us') or 0)
                     path_cost = float(row.get('path_cost') or 0)
                     
-                    # Accumulate for text summary
                     stats[solver]['makespan'] += float(row.get('makespan') or 0)
                     stats[solver]['runtime'] += runtime
                     stats[solver]['path_cost'] += path_cost
@@ -154,7 +126,6 @@ try:
                     stats[solver]['hl_gen'] += float(row.get('hl_nodes_generated') or 0)
                     stats[solver]['hl_exp'] += float(row.get('hl_nodes_expanded') or 0)
                     
-                    # Accumulate for plots
                     plot_data[solver][agents]['runtime'] += runtime
                     plot_data[solver][agents]['path_cost'] += path_cost
                 except ValueError:
@@ -164,7 +135,6 @@ try:
         print('  No valid data found in CSV for this suite.\n')
         sys.exit(0)
 
-    # --- 1. Print Text Summary ---
     output_lines = []
     header = f'| {\"Solver\":<22} | {\"Success\":<10} | {\"Time(ms)\":<10} | {\"MKSPN\":<8} | {\"Cost\":<8} | {\"CostSq\":<10} | {\"MaxPath\":<8} | {\"Mvmt\":<8} | {\"LL_Gen\":<8} | {\"LL_Exp\":<8} | {\"HL_Gen\":<8} | {\"HL_Exp\":<8} |'
     output_lines.append(header)
@@ -196,7 +166,6 @@ try:
     with open(os.path.join(suite_dir, 'comparative_summary.txt'), 'w') as out:
         out.write(report + '\n')
 
-    # --- 2. Generate Plot ---
     if plt is not None:
         fig, axs = plt.subplots(3, 1, figsize=(8, 12), sharex=True)
         suite_name = os.path.basename(os.path.normpath(suite_dir))
@@ -206,23 +175,14 @@ try:
         
         for idx, solver in enumerate(sorted(plot_data.keys())):
             agent_counts = sorted(plot_data[solver].keys())
-            if not agent_counts:
-                continue
+            if not agent_counts: continue
                 
-            success_rates = []
-            runtimes_ms = []
-            path_costs = []
-            
+            success_rates, runtimes_ms, path_costs = [], [], []
             for a in agent_counts:
                 d = plot_data[solver][a]
                 success_rates.append(d['solved'] / d['total'] if d['total'] > 0 else 0.0)
-                
-                # Averages are calculated only over solved instances
-                avg_runtime = (d['runtime'] / d['solved'] / 1000) if d['solved'] > 0 else None
-                avg_cost = (d['path_cost'] / d['solved']) if d['solved'] > 0 else None
-                
-                runtimes_ms.append(avg_runtime)
-                path_costs.append(avg_cost)
+                runtimes_ms.append((d['runtime'] / d['solved'] / 1000) if d['solved'] > 0 else None)
+                path_costs.append((d['path_cost'] / d['solved']) if d['solved'] > 0 else None)
             
             m = markers[idx % len(markers)]
             axs[0].plot(agent_counts, success_rates, marker=m, label=solver)
