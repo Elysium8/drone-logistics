@@ -228,14 +228,17 @@ public:
             std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&](size_t left, size_t right) {
                 // Primary: Dynamic Priority (closer to goal is better)
                 // We use a small epsilon (1e-5) to handle float precision, allowing exact ties to fall through to frustration
+
                 if (std::abs(current_h_vals[left] - current_h_vals[right]) > 1e-5) {
                     return current_h_vals[left] < current_h_vals[right]; 
                 }
-                
+
                 // Secondary: Frustration (higher frustration is better)
                 if (frustration[left] != frustration[right]) {
                     return frustration[left] > frustration[right];
                 }
+
+
                 
                 // Tertiary: Agent ID (matches your original (float)i / (float)n logic where lower ID = better)
                 return left < right;
