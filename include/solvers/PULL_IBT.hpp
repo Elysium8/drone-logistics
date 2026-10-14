@@ -206,23 +206,23 @@ public:
             }
 
             // ==========================================
-            // LAZY-EVALUATED PRIORITY CHAINS (MAX FRUSTRATION)
+            // LAZY-EVALUATED PRIORITY CHAINS (SUM DISTANCE)
             // ==========================================
-            std::vector<int> chain_max_frust(n, -1);
+            std::vector<float> chain_sum_dist(n, -1.0f);
             std::vector<bool> in_stack(n, false); 
 
-            std::function<int(int)> get_chain_max_frust = [&](int curr) -> int {
-                if (chain_max_frust[curr] != -1) return chain_max_frust[curr];
-                if (in_stack[curr]) return 0; 
+            std::function<float(int)> get_chain_sum_dist = [&](int curr) -> float {
+                if (chain_sum_dist[curr] != -1.0f) return chain_sum_dist[curr];
+                if (in_stack[curr]) return 0.0f; 
 
                 if (paths[curr].empty() || (t < paths[curr].size() && paths[curr][t].x == -1)) {
-                    return chain_max_frust[curr] = 0;
+                    return chain_sum_dist[curr] = 0.0f;
                 }
                 
                 Location curr_loc = (t < paths[curr].size()) ? paths[curr][t] : paths[curr].back();
 
                 in_stack[curr] = true;
-                int max_pull_frust = 0;
+                float max_pull_sum = 0.0f;
 
                 for (const Location &neighbor_loc : expander.get_neighbours(curr_loc, env)) {
                     int puller_id = occupied_at_t[env.get_index(neighbor_loc)];
@@ -232,41 +232,45 @@ public:
                         float puller_next_h = heuristic.get_h_value(curr_loc, instance.goals[puller_id]);
                         
                         if (puller_current_h - puller_next_h > 1e-5f) { 
-                            int puller_frust = get_chain_max_frust(puller_id);
-                            if (puller_frust > max_pull_frust) {
-                                max_pull_frust = puller_frust;
+                            float puller_sum = get_chain_sum_dist(puller_id);
+                            if (puller_sum > max_pull_sum) {
+                                max_pull_sum = puller_sum;
                             }
                         }
                     }
                 }
 
                 in_stack[curr] = false;
-                return chain_max_frust[curr] = frustration[curr] + max_pull_frust;
+                // Return THIS agent's distance PLUS the heaviest distance branch behind it
+                return chain_sum_dist[curr] = current_h_vals[curr] + max_pull_sum;
             };
 
             // ==========================================
-            // BASELINE SORTING (Merit + Chain Tiebreak)
+            // BASELINE SORTING (Merit + Distance Chain Tiebreak)
             // ==========================================
             std::vector<size_t> sorted_priorities(n);
             std::iota(sorted_priorities.begin(), sorted_priorities.end(), 0);
 
             std::sort(sorted_priorities.begin(), sorted_priorities.end(), [&](size_t left, size_t right) {
-                // 1. Primary: Distance to goal
+                // 1. Primary: Dynamic Distance to goal (keeps the core PIBT churn low)
                 if (std::abs(current_h_vals[left] - current_h_vals[right]) > 1e-5f) {
                     return current_h_vals[left] < current_h_vals[right]; 
                 }
-                                
-
-                // 2. Secondary: Max frustration inside the dependency chain
-                int l_chain_max = get_chain_max_frust(left);
-                int r_chain_max = get_chain_max_frust(right);
-                if (l_chain_max != r_chain_max) {
-                    return l_chain_max > r_chain_max;
+                
+                // 2. Secondary: Chain Distance Metric (Max or Sum)
+                // Use get_chain_sum_dist or get_chain_max_dist here based on your test
+                float l_chain_dist = get_chain_sum_dist(left);
+                float r_chain_dist = get_chain_sum_dist(right);
+                
+                if (std::abs(l_chain_dist - r_chain_dist) > 1e-5f) {
+                    return l_chain_dist > r_chain_dist; // Higher distance chain gets priority
                 }
+
                 // 3. Tertiary: Personal frustration
                 if (frustration[left] != frustration[right]) {
                     return frustration[left] > frustration[right];
                 }
+                
                 // 4. Quaternary: ID
                 return left < right;
             });

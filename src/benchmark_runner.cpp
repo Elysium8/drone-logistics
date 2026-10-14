@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <thread>
@@ -37,44 +38,90 @@
 
 namespace fs = std::filesystem;
 
+// Passed to load_scenario to mean "use every agent in the file"
+constexpr int ALL_AGENTS = 100000;
+
 struct Job {
     std::string map_path;
     std::string scen_path;
+    int num_agents;   // take the first num_agents lines of the scenario (ALL_AGENTS = whole file)
 };
 
 int main(int argc, char *argv[]) {
     std::string suite_dir = "";
     std::string csv_file = "";
     std::string ll_solver = "astar";
+    std::vector<int> agent_counts = {ALL_AGENTS};
 
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
         if (arg == "--dir" && i + 1 < argc) suite_dir = argv[++i];
         else if (arg == "--csv" && i + 1 < argc) csv_file = argv[++i];
         else if (arg == "--ll" && i + 1 < argc) ll_solver = argv[++i];
+        else if (arg == "--agents" && i + 1 < argc) {
+            // Comma-separated list, e.g. --agents 100,200,500,1000
+            agent_counts.clear();
+            std::stringstream ss(argv[++i]);
+            std::string tok;
+            while (std::getline(ss, tok, ',')) {
+                if (tok.empty()) continue;
+                int k = std::stoi(tok);
+                if (k <= 0) {
+                    std::cerr << "Error: agent counts must be positive (got " << k << ")\n";
+                    return 1;
+                }
+                agent_counts.push_back(k);
+            }
+            if (agent_counts.empty()) {
+                std::cerr << "Error: --agents needs at least one count\n";
+                return 1;
+            }
+        }
     }
 
     if (suite_dir.empty() || csv_file.empty()) {
-        std::cerr << "Usage: ./benchmark_runner --dir <path> --csv <path> --ll <solver>\n";
+        std::cerr << "Usage: ./benchmark_runner --dir <path> --csv <path> --ll <solver> [--agents <n1,n2,...>]\n";
         return 1;
     }
 
     std::vector<std::string> target_solvers = {"pibt_frustration", "pibt_dynamic", "pull_ibt"};
 
-    // 1. Gather all jobs
-    std::vector<Job> jobs;
-    for (const auto& entry : fs::directory_iterator(suite_dir)) {
-        std::string map_path = entry.path().string();
-        if (map_path.find("map_") == std::string::npos) continue;
+    // 1. Gather all jobs: match every scenario to its map by name
+    struct NamedFile { std::string name; std::string path; };
+    std::vector<NamedFile> maps, scens;
 
-        std::string base_name = entry.path().stem().string().substr(4);
-        std::string scen_path = suite_dir + "/scen_" + base_name + ".txt";
-        
-        if (!fs::exists(scen_path)) {
-            scen_path = suite_dir + "/scen_" + base_name + ".scen";
-            if (!fs::exists(scen_path)) continue;
+    for (const auto& entry : fs::directory_iterator(suite_dir)) {
+        if (!entry.is_regular_file()) continue;
+        std::string stem = entry.path().stem().string();   // filename only, not the directory
+        if (stem.rfind("map_", 0) == 0)       maps.push_back({stem.substr(4), entry.path().string()});
+        else if (stem.rfind("scen_", 0) == 0) scens.push_back({stem.substr(5), entry.path().string()});
+    }
+
+    // directory_iterator order is arbitrary, so sort for reproducible runs
+    std::sort(scens.begin(), scens.end(), [](const NamedFile& a, const NamedFile& b) { return a.name < b.name; });
+
+    // "Berlin_1_256-random-1" belongs to map "Berlin_1_256"; a scen named exactly like the map also matches
+    auto belongs_to = [](const std::string& scen, const std::string& map) {
+        if (scen == map) return true;
+        return scen.size() > map.size()
+            && scen.compare(0, map.size(), map) == 0
+            && scen[map.size()] == '-';
+    };
+
+    std::vector<Job> jobs;
+    for (const auto& s : scens) {
+        const NamedFile* best = nullptr;
+        for (const auto& m : maps) {
+            // longest matching map name wins, in case one map name is a prefix of another
+            if (belongs_to(s.name, m.name) && (!best || m.name.size() > best->name.size()))
+                best = &m;
         }
-        jobs.push_back({map_path, scen_path});
+        if (best) {
+            // One job per (scenario, agent count) so threads balance the load
+            for (int k : agent_counts) jobs.push_back({best->path, s.path, k});
+        } else {
+            std::cerr << "Warning: no map found for scenario " << s.path << "\n";
+        }
     }
 
     if (jobs.empty()) return 0;
@@ -101,8 +148,15 @@ int main(int argc, char *argv[]) {
             
             // Isolate memory allocations to the thread
             Environment env = FileIO::load_map(job.map_path);
-            MAPFInstance instance = FileIO::load_scenario(job.scen_path, 100000);
+            MAPFInstance instance = FileIO::load_scenario(job.scen_path, job.num_agents);
             int actual_agents = instance.starts.size();
+
+            // Asked for more agents than the file has: skip, otherwise the
+            // largest size would be re-run and recorded once per oversized request
+            if (job.num_agents != ALL_AGENTS && actual_agents < job.num_agents) {
+                completed_jobs++;
+                continue;
+            }
 
             ManhattanExpander expander;
             TrueDistanceHeuristic<ManhattanExpander> heuristic(env, instance.goals, expander);

@@ -8,12 +8,14 @@ cd "$(dirname "$0")/.."
 LL_SOLVER=""
 PARENT_DIR=""
 PROFILE_MODE=0
+AGENTS=""
 
 # 3. Parse Command Line Arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --ll) LL_SOLVER="$2"; shift ;;
         --dir) PARENT_DIR="$2"; shift ;;
+        --agents) AGENTS="$2"; shift ;;
         --profile) PROFILE_MODE=1 ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
@@ -23,7 +25,7 @@ done
 # 4. Validate Inputs
 if [ -z "$LL_SOLVER" ] || [ -z "$PARENT_DIR" ]; then
     echo "Error: You must provide --ll and --dir."
-    echo "Usage: ./scripts/run_suite.sh --ll <solver> --dir tests [--profile]"
+    echo "Usage: ./scripts/run_suite.sh --ll <solver> --dir tests [--agents 100,200,500] [--profile]"
     exit 1
 fi
 
@@ -58,11 +60,12 @@ for SUITE_DIR in "$PARENT_DIR"/*/; do
     fi
 
     # 7. Execute the Native Runner (with or without profiling)
+    # ${AGENTS:+--agents "$AGENTS"} expands to nothing when --agents was not given
     if [ "$PROFILE_MODE" -eq 1 ]; then
         echo "  Running Valgrind Callgrind on $SUITE_DIR (this will take a while)..."
-        valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER"
+        valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER" ${AGENTS:+--agents "$AGENTS"}
     else
-        ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER"
+        ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER" ${AGENTS:+--agents "$AGENTS"}
     fi
 
     # 8. Calculate Aggregate Statistics and Generate Plots

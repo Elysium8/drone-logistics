@@ -1,0 +1,4 @@
+# width height depth
+32 32 1
+# obstacles (O x y z)
+# pads (P x y z)
