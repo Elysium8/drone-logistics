@@ -46,3 +46,7 @@ instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt_frustration-astar,400,1,133,17749,1146333,132,15408,8420,0,0,0,0
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pibt_dynamic-astar,400,1,127,17335,1073539,126,14992,9199,0,0,0,0
 instances/warehouseSmall_converted/warehouse_small.map,instances/warehouseSmall_converted/warehouseSmall_400.scen,pull_ibt-astar,400,1,133,16991,1034671,132,14956,20244,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt_frustration-astar,500,1,506,125256,41215634,483,29387,38881,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt_frustration-astar,500,1,506,125256,41215634,483,29387,38881,0,0,0,0
+Metrics successfully appended to data/benchmark_results.csv

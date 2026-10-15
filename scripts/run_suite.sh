@@ -38,6 +38,13 @@ fi
 echo "--- Compiling ---"
 make -C build > /dev/null
 
+# ==========================================
+# GLOBAL AGGREGATION SETUP
+# ==========================================
+GLOBAL_CSV="$PARENT_DIR/global_benchmark_results.csv"
+echo "map_file,scen_file,solver,agents,solved,makespan,path_cost,path_cost_squared,longest_path,total_movement,runtime_us,ll_nodes_generated,ll_nodes_expanded,hl_nodes_generated,hl_nodes_expanded" > "$GLOBAL_CSV"
+
+
 # 6. Iterate over all subfolders in the given parent directory
 for SUITE_DIR in "$PARENT_DIR"/*/; do
     SUITE_DIR=${SUITE_DIR%/}
@@ -60,12 +67,16 @@ for SUITE_DIR in "$PARENT_DIR"/*/; do
     fi
 
     # 7. Execute the Native Runner (with or without profiling)
-    # ${AGENTS:+--agents "$AGENTS"} expands to nothing when --agents was not given
     if [ "$PROFILE_MODE" -eq 1 ]; then
         echo "  Running Valgrind Callgrind on $SUITE_DIR (this will take a while)..."
         valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER" ${AGENTS:+--agents "$AGENTS"}
     else
         ./build/benchmark_runner --dir "$SUITE_DIR" --csv "$CSV_FILE" --ll "$LL_SOLVER" ${AGENTS:+--agents "$AGENTS"}
+    fi
+
+    # Append to global CSV (skipping the header line of the local CSV)
+    if [ -f "$CSV_FILE" ]; then
+        tail -n +2 "$CSV_FILE" >> "$GLOBAL_CSV"
     fi
 
     # 8. Calculate Aggregate Statistics and Generate Plots
@@ -139,7 +150,7 @@ try:
         sys.exit(0)
 
     output_lines = []
-    header = f'| {\"Solver\":<22} | {\"Success\":<10} | {\"Time(ms)\":<10} | {\"MKSPN\":<8} | {\"Cost\":<8} | {\"CostSq\":<10} | {\"MaxPath\":<8} | {\"Mvmt\":<8} | {\"LL_Gen\":<8} | {\"LL_Exp\":<8} | {\"HL_Gen\":<8} | {\"HL_Exp\":<8} |'
+    header = f'| {{\"Solver\":<26}} | {{\"Success\":<10}} | {{\"Time(ms)\":<10}} | {{\"MKSPN\":<8}} | {{\"Cost\":<8}} | {{\"CostSq\":<10}} | {{\"MaxPath\":<8}} | {{\"Mvmt\":<8}} | {{\"LL_Gen\":<8}} | {{\"LL_Exp\":<8}} | {{\"HL_Gen\":<8}} | {{\"HL_Exp\":<8}} |'
     output_lines.append(header)
     output_lines.append('-' * len(header))
     
@@ -160,7 +171,7 @@ try:
         avg_hl_exp = data['hl_exp'] / solved if solved > 0 else 0.0
         
         rate_str = f'{solved}/{total}'
-        row_str = f'| {solver:<22} | {rate_str:<10} | {avg_runtime_ms:<10.2f} | {avg_mkspn:<8.1f} | {avg_cost:<8.1f} | {avg_cost_sq:<10.1f} | {avg_maxpath:<8.1f} | {avg_mvmt:<8.1f} | {avg_ll_gen:<8.1f} | {avg_ll_exp:<8.1f} | {avg_hl_gen:<8.1f} | {avg_hl_exp:<8.1f} |'
+        row_str = f'| {solver:<26} | {rate_str:<10} | {avg_runtime_ms:<10.2f} | {avg_mkspn:<8.1f} | {avg_cost:<8.1f} | {avg_cost_sq:<10.1f} | {avg_maxpath:<8.1f} | {avg_mvmt:<8.1f} | {avg_ll_gen:<8.1f} | {avg_ll_exp:<8.1f} | {avg_hl_gen:<8.1f} | {avg_hl_exp:<8.1f} |'
         output_lines.append(row_str)
 
     report = '\n'.join(output_lines)
@@ -215,4 +226,139 @@ except Exception as e:
 done
 
 echo "========================================================"
-echo "All test suites in $PARENT_DIR completed!"
+echo "All test suites completed! Generating GLOBAL summary..."
+echo "========================================================"
+
+# ==========================================
+# GENERATE GLOBAL SUMMARY FROM COMBINED CSV
+# ==========================================
+python3 -c "
+import csv
+import sys
+import os
+from collections import defaultdict
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    plt = None
+
+global_csv = '$GLOBAL_CSV'
+parent_dir = '$PARENT_DIR'
+
+stats = defaultdict(lambda: {
+    'total': 0, 'solved': 0, 'makespan': 0.0, 'runtime': 0.0,
+    'path_cost': 0.0, 'path_cost_sq': 0.0, 'longest_path': 0.0, 'total_mvmt': 0.0, 
+    'll_gen': 0.0, 'll_exp': 0.0, 'hl_gen': 0.0, 'hl_exp': 0.0
+})
+
+plot_data = defaultdict(lambda: defaultdict(lambda: {
+    'total': 0, 'solved': 0, 'runtime': 0.0, 'path_cost': 0.0
+}))
+
+try:
+    if not os.path.exists(global_csv):
+        print('  No global CSV found.')
+        sys.exit(0)
+
+    with open(global_csv, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            solver = str(row.get('solver') or 'unknown').strip()
+            try:
+                agents = int(row.get('agents') or 0)
+            except ValueError:
+                continue
+
+            stats[solver]['total'] += 1
+            plot_data[solver][agents]['total'] += 1
+            
+            if str(row.get('solved') or '0').strip() == '1':
+                stats[solver]['solved'] += 1
+                plot_data[solver][agents]['solved'] += 1
+                try:
+                    runtime = float(row.get('runtime_us') or 0)
+                    path_cost = float(row.get('path_cost') or 0)
+                    
+                    stats[solver]['makespan'] += float(row.get('makespan') or 0)
+                    stats[solver]['runtime'] += runtime
+                    stats[solver]['path_cost'] += path_cost
+                    stats[solver]['path_cost_sq'] += float(row.get('path_cost_squared') or 0)
+                    stats[solver]['longest_path'] += float(row.get('longest_path') or 0)
+                    stats[solver]['total_mvmt'] += float(row.get('total_movement') or 0)
+                    stats[solver]['ll_gen'] += float(row.get('ll_nodes_generated') or 0)
+                    stats[solver]['ll_exp'] += float(row.get('ll_nodes_expanded') or 0)
+                    stats[solver]['hl_gen'] += float(row.get('hl_nodes_generated') or 0)
+                    stats[solver]['hl_exp'] += float(row.get('hl_nodes_expanded') or 0)
+                    
+                    plot_data[solver][agents]['runtime'] += runtime
+                    plot_data[solver][agents]['path_cost'] += path_cost
+                except ValueError:
+                    pass
+
+    output_lines = []
+    header = f'| {{\"Solver\":<26}} | {{\"Success\":<10}} | {{\"Time(ms)\":<10}} | {{\"MKSPN\":<8}} | {{\"Cost\":<8}} | {{\"CostSq\":<10}} | {{\"MaxPath\":<8}} | {{\"Mvmt\":<8}} | {{\"LL_Gen\":<8}} | {{\"LL_Exp\":<8}} | {{\"HL_Gen\":<8}} | {{\"HL_Exp\":<8}} |'
+    output_lines.append('GLOBAL AGGREGATED METRICS ACROSS ALL TEST SUITES')
+    output_lines.append(header)
+    output_lines.append('-' * len(header))
+    
+    for solver, data in stats.items():
+        total = data['total']
+        solved = data['solved']
+        if total == 0: continue
+            
+        avg_runtime_ms = (data['runtime'] / solved) / 1000 if solved > 0 else 0.0
+        avg_mkspn = data['makespan'] / solved if solved > 0 else 0.0
+        avg_cost = data['path_cost'] / solved if solved > 0 else 0.0
+        avg_cost_sq = data['path_cost_sq'] / solved if solved > 0 else 0.0
+        avg_maxpath = data['longest_path'] / solved if solved > 0 else 0.0
+        avg_mvmt = data['total_mvmt'] / solved if solved > 0 else 0.0
+        avg_ll_gen = data['ll_gen'] / solved if solved > 0 else 0.0
+        avg_ll_exp = data['ll_exp'] / solved if solved > 0 else 0.0
+        avg_hl_gen = data['hl_gen'] / solved if solved > 0 else 0.0
+        avg_hl_exp = data['hl_exp'] / solved if solved > 0 else 0.0
+        
+        row_str = f'| {solver:<26} | {f\"{solved}/{total}\":<10} | {avg_runtime_ms:<10.2f} | {avg_mkspn:<8.1f} | {avg_cost:<8.1f} | {avg_cost_sq:<10.1f} | {avg_maxpath:<8.1f} | {avg_mvmt:<8.1f} | {avg_ll_gen:<8.1f} | {avg_ll_exp:<8.1f} | {avg_hl_gen:<8.1f} | {avg_hl_exp:<8.1f} |'
+        output_lines.append(row_str)
+
+    report = '\n'.join(output_lines)
+    print('\n' + report + '\n')
+    
+    with open(os.path.join(parent_dir, 'global_comparative_summary.txt'), 'w') as out:
+        out.write(report + '\n')
+
+    if plt is not None and plot_data:
+        fig, axs = plt.subplots(3, 1, figsize=(8, 12), sharex=True)
+        fig.suptitle('GLOBAL Performance Metrics', fontsize=16)
+
+        markers = ['o', 's', '^', 'D', 'v', 'p']
+        for idx, solver in enumerate(sorted(plot_data.keys())):
+            agent_counts = sorted(plot_data[solver].keys())
+            if not agent_counts: continue
+                
+            success_rates = [plot_data[solver][a]['solved'] / plot_data[solver][a]['total'] if plot_data[solver][a]['total'] > 0 else 0.0 for a in agent_counts]
+            runtimes_ms = [(plot_data[solver][a]['runtime'] / plot_data[solver][a]['solved'] / 1000) if plot_data[solver][a]['solved'] > 0 else None for a in agent_counts]
+            path_costs = [(plot_data[solver][a]['path_cost'] / plot_data[solver][a]['solved']) if plot_data[solver][a]['solved'] > 0 else None for a in agent_counts]
+            
+            m = markers[idx % len(markers)]
+            axs[0].plot(agent_counts, success_rates, marker=m, label=solver)
+            axs[1].plot(agent_counts, runtimes_ms, marker=m, label=solver)
+            axs[2].plot(agent_counts, path_costs, marker=m, label=solver)
+
+        axs[0].set_ylabel('Success Rate')
+        axs[0].set_ylim(-0.05, 1.05)
+        axs[0].grid(True, linestyle='--', alpha=0.7)
+        axs[0].legend(loc='lower left', fontsize='small')
+
+        axs[1].set_ylabel('Avg Runtime (ms)')
+        axs[1].grid(True, linestyle='--', alpha=0.7)
+
+        axs[2].set_ylabel('Avg Path Cost')
+        axs[2].set_xlabel('Agents: |A|')
+        axs[2].grid(True, linestyle='--', alpha=0.7)
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(parent_dir, 'global_summary_plots.png'), dpi=150)
+
+except Exception as e:
+    print(f'  Global aggregation failed: {e}\n')
+"

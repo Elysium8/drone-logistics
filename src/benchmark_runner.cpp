@@ -24,7 +24,13 @@
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
-#include "../include/solvers/PULL_IBT.hpp"
+
+#include "../include/solvers/pull_tie_max_dist.hpp"
+#include "../include/solvers/pull_tie_max_length.hpp"
+#include "../include/solvers/pull_tie_sum_dist.hpp"
+#include "../include/solvers/pull_tie_sum_frust.hpp"
+
+
 
 // Low-Level Components
 #include "../include/solvers/CBSConstraints.hpp" 
@@ -84,7 +90,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::vector<std::string> target_solvers = {"pibt_frustration", "pibt_dynamic", "pull_ibt"};
+    std::vector<std::string> target_solvers = {
+        "pibt_frustration", 
+        "pibt_dynamic", 
+        "pull_max_dist", 
+        "pull_max_length", 
+        "pull_sum_dist", 
+        "pull_sum_frust"
+    };
 
     // 1. Gather all jobs: match every scenario to its map by name
     struct NamedFile { std::string name; std::string path; };
@@ -170,8 +183,14 @@ int main(int argc, char *argv[]) {
                     PIBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
                 } else if (hl == "pibt_frustration") {
                     PIBT_naive solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-                } else if (hl == "pull_ibt") {
-                    PULL_IBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                } else if (hl == "pull_max_dist") {
+                    pull_tie_max_dist solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                } else if (hl == "pull_max_length") {
+                    pull_tie_max_length solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                } else if (hl == "pull_sum_dist") {
+                    pull_tie_sum_dist solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                } else if (hl == "pull_sum_frust") {
+                    pull_tie_sum_frust solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
                 }
 
                 local_csv_buffer << job.map_path << "," << job.scen_path << "," << hl << "-" << ll_solver << ","

@@ -99,7 +99,19 @@ int main(int argc, char *argv[])
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
-        else if (hl_solver == "pull_ibt") {
+        else if (hl_solver == "pull_ibt_max_dist") {
+            PULL_IBT solver;
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+        else if (hl_solver == "pull_ibt_max_length") {
+            PULL_IBT solver;
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+        else if (hl_solver == "pull_ibt_sum_dist") {
+            PULL_IBT solver;
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+        else if (hl_solver == "pull_ibt_sum_frust") {
             PULL_IBT solver;
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
