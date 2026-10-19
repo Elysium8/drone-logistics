@@ -25,11 +25,7 @@
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
 
-#include "../include/solvers/pull_tie_max_dist.hpp"
-#include "../include/solvers/pull_tie_max_length.hpp"
-#include "../include/solvers/pull_tie_sum_dist.hpp"
-#include "../include/solvers/pull_tie_sum_frust.hpp"
-
+#include "../include/solvers/PULL_IBT2.hpp"
 
 
 // Low-Level Components
@@ -57,7 +53,7 @@ int main(int argc, char *argv[]) {
     std::string suite_dir = "";
     std::string csv_file = "";
     std::string ll_solver = "astar";
-    std::vector<int> agent_counts = {ALL_AGENTS};
+    std::vector<int> agent_counts = {100, 200, 500, 1000};
 
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
@@ -91,12 +87,10 @@ int main(int argc, char *argv[]) {
     }
 
     std::vector<std::string> target_solvers = {
-        "pibt_frustration", 
-        "pibt_dynamic", 
-        "pull_max_dist", 
-        "pull_max_length", 
-        "pull_sum_dist", 
-        "pull_sum_frust"
+    "pibt_frustration",
+    "pibt_dynamic",
+    "pull2_win5",
+    "pull2_win20_age150"
     };
 
     // 1. Gather all jobs: match every scenario to its map by name
@@ -178,19 +172,17 @@ int main(int argc, char *argv[]) {
             std::ostringstream local_csv_buffer;
 
             for (const auto& hl : target_solvers) {
+                MAPFInstance run_instance = instance;   // pristine copy for this solver
+                SafePlanner run_planner;                // and its own planner
                 SearchMetrics metrics;
                 if (hl == "pibt_dynamic") {
-                    PIBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                    PIBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 } else if (hl == "pibt_frustration") {
-                    PIBT_naive solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-                } else if (hl == "pull_max_dist") {
-                    pull_tie_max_dist solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-                } else if (hl == "pull_max_length") {
-                    pull_tie_max_length solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-                } else if (hl == "pull_sum_dist") {
-                    pull_tie_sum_dist solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-                } else if (hl == "pull_sum_frust") {
-                    pull_tie_sum_frust solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+                    PIBT_naive solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
+                } else if (hl.rfind("pull2_", 0) == 0) {
+                    PULL_IBT2 solver;
+                    solver.cfg = PULL_IBT2::Config::from_name(hl);
+                    solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 }
 
                 local_csv_buffer << job.map_path << "," << job.scen_path << "," << hl << "-" << ll_solver << ","
