@@ -16,7 +16,8 @@
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
-#include "../include/solvers/PULL_IBT.hpp"
+#include "../include/solvers/PULL_IBT_action.hpp"
+#include "../include/solvers/PULL_IBT_window.hpp"
 
 
 // Low-Level Components
@@ -99,20 +100,14 @@ int main(int argc, char *argv[])
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
-        else if (hl_solver == "pull_ibt_max_dist") {
-            PULL_IBT solver;
+        else if (hl_solver.rfind("pull2_act", 0) == 0) {
+            PULL_IBT_action solver;
+            solver.set_options(hl_solver);
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
-        else if (hl_solver == "pull_ibt_max_length") {
-            PULL_IBT solver;
-            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-        }
-        else if (hl_solver == "pull_ibt_sum_dist") {
-            PULL_IBT solver;
-            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
-        }
-        else if (hl_solver == "pull_ibt_sum_frust") {
-            PULL_IBT solver;
+        else if (hl_solver.rfind("pull2_win", 0) == 0) {
+            PULL_IBT_window solver;
+            solver.set_options(hl_solver);
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 

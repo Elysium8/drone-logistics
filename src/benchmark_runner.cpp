@@ -25,7 +25,8 @@
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
 
-#include "../include/solvers/PULL_IBT2.hpp"
+#include "../include/solvers/PULL_IBT_action.hpp"
+#include "../include/solvers/PULL_IBT_window.hpp"
 
 
 // Low-Level Components
@@ -89,8 +90,9 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> target_solvers = {
     "pibt_frustration",
     "pibt_dynamic",
-    "pull2_win5",
-    "pull2_win20_age150"
+    "pull2_act_old",
+    "pull2_act_long",
+    "pull2_win40_age150"
     };
 
     // 1. Gather all jobs: match every scenario to its map by name
@@ -179,9 +181,13 @@ int main(int argc, char *argv[]) {
                     PIBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 } else if (hl == "pibt_frustration") {
                     PIBT_naive solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
-                } else if (hl.rfind("pull2_", 0) == 0) {
-                    PULL_IBT2 solver;
-                    solver.cfg = PULL_IBT2::Config::from_name(hl);
+                } else if (hl.rfind("pull2_act", 0) == 0) {
+                    PULL_IBT_action solver;
+                    solver.set_options(hl);
+                    solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
+                } else if (hl.rfind("pull2_win", 0) == 0) {
+                    PULL_IBT_window solver;
+                    solver.set_options(hl);
                     solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 }
 
