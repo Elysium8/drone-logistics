@@ -4,17 +4,12 @@
 \toprule
 Solver & Success (\%) & SOC/agent & RMS path & Makespan & Time (ms) & SOC ratio \\
 \midrule
-pibt\_frustration & 90.4 & 139.51 & 162.68 & 451.6 & \textbf{116.4} & 1.0000 \\
-pibt\_dynamic & 90.0 & \textbf{139.05} & 162.32 & 452.3 & 125.6 & 0.9823 \\
-pull2\_act\_old & 89.6 & 140.69 & 164.74 & 458.6 & 135.3 & 0.9902 \\
-pull2\_act\_long & 89.9 & 139.59 & 163.00 & 453.2 & 176.6 & \textbf{0.9737} \\
-pull2\_win5 & 91.2 & 149.73 & 175.35 & 467.7 & 155.7 & 1.0539 \\
-pull2\_win5\_age150 & 93.2 & 144.03 & 165.96 & 435.9 & 145.6 & 1.0352 \\
-pull2\_win10\_age150 & 92.9 & 142.70 & 164.50 & 433.2 & 128.2 & 1.0240 \\
-pull2\_win20\_age150 & \textbf{93.5} & 141.55 & 163.26 & 433.1 & 124.1 & 1.0107 \\
-pull2\_win30\_age150 & 93.4 & 140.95 & 162.60 & \textbf{432.0} & 120.5 & 1.0033 \\
-pull2\_win40\_age150 & \textbf{93.5} & 140.62 & \textbf{162.28} & 432.1 & 126.2 & 0.9995 \\
+pibt\_hr & 96.7 & \textbf{137.88} & \textbf{156.58} & 380.6 & 563.1 & \textbf{1.0000} \\
+phr\_far & 95.6 & 142.94 & 161.84 & 386.6 & \textbf{129.9} & 1.0424 \\
+phr\_win20\_age150 & 95.3 & 146.25 & 168.64 & 431.2 & 144.9 & 1.0525 \\
+phr\_win20\_age150\_h\_y & 96.9 & 141.59 & 163.51 & 422.0 & 197.4 & 1.0147 \\
+phr\_far\_h\_r\_seed1 & \textbf{97.5} & 139.12 & 157.60 & \textbf{379.0} & 188.9 & 1.0071 \\
 \bottomrule
 \end{tabular}
-\caption{Success rate over all 3026 instances. Quality metrics are means over the 2572 instances solved by every solver. SOC ratio is the geometric mean of per-instance sum-of-costs ratios against pibt\_frustration over instances both solved.}
+\caption{Success rate over all 3026 instances. Quality metrics are means over the 2821 instances solved by every solver. SOC ratio is the geometric mean of per-instance sum-of-costs ratios against pibt\_hr over instances both solved.}
 \end{table}

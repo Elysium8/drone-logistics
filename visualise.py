@@ -8,6 +8,20 @@ import colorsys
 # Global state for the playback loop
 is_playing = False
 
+# Unit cube centred on the origin, used for batched obstacles and pads
+BOX_VERTICES = np.array([
+    [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, 0.5, -0.5], [-0.5, 0.5, -0.5],
+    [-0.5, -0.5, 0.5], [0.5, -0.5, 0.5], [0.5, 0.5, 0.5], [-0.5, 0.5, 0.5],
+], dtype=np.float32)
+BOX_FACES = np.array([
+    [0, 2, 1], [0, 3, 2],  # bottom
+    [4, 5, 6], [4, 6, 7],  # top
+    [0, 1, 5], [0, 5, 4],  # front
+    [2, 3, 7], [2, 7, 6],  # back
+    [1, 2, 6], [1, 6, 5],  # right
+    [3, 0, 4], [3, 4, 7],  # left
+], dtype=np.uint32)
+
 # --- HELPER FUNCTIONS ---
 def generate_color(index, total):
     """Generates a distinct color for each drone based on its index."""
@@ -84,31 +98,40 @@ def main():
         section_color=(120, 120, 120)
     )
 
-    # Render map obstacles as semi-transparent boxes
-    for obs in obstacles:
-        server.scene.add_box(
-            name=f"/environment/obstacles/obs_{obs[0]}_{obs[1]}_{obs[2]}",
-            position=(obs[0], obs[1], obs[2]),
-            dimensions=(1.0, 1.0, 1.0),
-            color=(100, 100, 100),
+    # Start the camera looking at the whole map instead of the corner at the origin
+    server.initial_camera.look_at = ((w - 1) / 2, (h - 1) / 2, 0.0)
+    server.initial_camera.position = ((w - 1) / 2, -0.4 * h, 0.9 * max(w, h) + d)
+
+    # Render map obstacles as semi-transparent boxes, all in ONE batched mesh.
+    # One scene node per box freezes the browser on big maps (maze-128-128-1 has 8193 obstacles)
+    if obstacles:
+        server.scene.add_batched_meshes_simple(
+            name="/environment/obstacles",
+            vertices=BOX_VERTICES,
+            faces=BOX_FACES,
+            batched_wxyzs=np.tile([1.0, 0.0, 0.0, 0.0], (len(obstacles), 1)),
+            batched_positions=np.array(obstacles, dtype=float),
+            batched_colors=(100, 100, 100),
             opacity=0.3 # Transparent so you can see drones behind them
         )
 
     # 5. Render Agents, Rigid Paths, and Landing Pads
+    # Ground pads for landing, one batched mesh for all agents
+    if agents_data:
+        server.scene.add_batched_meshes_simple(
+            name="/environment/pads",
+            vertices=BOX_VERTICES * np.array([1.0, 1.0, 0.1]),
+            faces=BOX_FACES,
+            batched_wxyzs=np.tile([1.0, 0.0, 0.0, 0.0], (len(agents_data), 1)),
+            batched_positions=np.array([agent["path"][-1] for agent in agents_data]),
+            batched_colors=np.array([agent["color"] for agent in agents_data], dtype=np.uint8),
+            wireframe=True
+        )
+
     drone_handles = []
     for agent in agents_data:
         path = agent["path"]
-        goal_pos = path[-1]
 
-        # Ground pad for landing
-        server.scene.add_box(
-            name=f"/environment/pads/{agent['name']}_pad",
-            position=(goal_pos[0], goal_pos[1], goal_pos[2]),
-            dimensions=(1.0, 1.0, 0.1),
-            color=agent["color"],
-            wireframe=True
-        )
-        
         path_handle = None
         valid_path = [p for p in path if p[0] >= 0 and p[1] >= 0 and p[2] >= 0]
         if len(valid_path) > 1:
@@ -126,7 +149,8 @@ def main():
             name=f"/agents/{agent['name']}",
             position=path[0],
             radius=0.25,
-            color=agent["color"]
+            color=agent["color"],
+            visible=bool(np.all(path[0] >= 0))  # unspawned drones start at (-1, -1, -1)
         )
         
         # Save the drone, the path array, AND the path handle

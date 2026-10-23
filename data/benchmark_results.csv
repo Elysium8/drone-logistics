@@ -50,3 +50,15 @@ data/gen_map.txt,data/gen_scen.txt,pibt_frustration-astar,500,1,506,125256,41215
 Validation: SUCCESS
 data/gen_map.txt,data/gen_scen.txt,pibt_frustration-astar,500,1,506,125256,41215634,483,29387,38881,0,0,0,0
 Metrics successfully appended to data/benchmark_results.csv
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,400,0,0,0,0,0,0,429164,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,400,0,0,0,0,0,0,431505,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,100,1,1079,46349,28579579,1078,45479,58477,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,1,1,1079,1078,1162084,1078,1078,15669,0,0,0,0
+data/gen_map.txt,data/gen_scen.txt,pibt_hr-astar,1000,1,130,7562,61724,15,6993,26735,0,0,0,0
+Validation: SUCCESS
+data/gen_map.txt,data/gen_scen.txt,pibt_hr-astar,1000,1,130,7562,61724,15,6993,26735,0,0,0,0
+Metrics successfully appended to data/benchmark_results.csv
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,1,1,1079,1078,1162084,1078,1078,13891,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,200,1,1092,108543,74006551,1091,102543,143281,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,300,0,0,0,0,0,0,294446,0,0,0,0
+tests/maze-128-128-1/map_maze-128-128-1.txt,tests/maze-128-128-1/scen_maze-128-128-1-random-10.txt,pibt_hr-astar,500,0,0,0,0,0,0,611122,0,0,0,0

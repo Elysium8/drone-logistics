@@ -24,9 +24,11 @@
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
+#include "../include/solvers/PIBT_HR.hpp"
 
 #include "../include/solvers/PULL_IBT_action.hpp"
 #include "../include/solvers/PULL_IBT_window.hpp"
+#include "../include/solvers/PULL_IBT_HR.hpp"
 
 
 // Low-Level Components
@@ -88,12 +90,19 @@ int main(int argc, char *argv[]) {
     }
 
     std::vector<std::string> target_solvers = {
-    "pibt_frustration",
-    "pibt_dynamic",
-    "pull2_act_old",
-    "pull2_act_long",
-    "pull2_win40_age150"
-    };
+        //"pibt_frustration",
+        "pibt_hr",
+        //"pull2_win20_age150",
+        // "phr_close",              // ordering ablation: closest-first tie
+        "phr_far",                // ordering ablation: farthest-first tie (≈ HR's PIBT without hindrance/regret)
+        "phr_win20_age150",       // your window ranking, rebased
+        "phr_win20_age150_h_y",    // rebased + hindrance + yield
+        //"phr_win40_age150",       // your window ranking, rebased
+        //"phr_win40_age150_h_y",
+        "phr_far_h_r_seed1",
+        //"phr_far_h_r_seed2"
+        };
+
 
     // 1. Gather all jobs: match every scenario to its map by name
     struct NamedFile { std::string name; std::string path; };
@@ -181,6 +190,14 @@ int main(int argc, char *argv[]) {
                     PIBT solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 } else if (hl == "pibt_frustration") {
                     PIBT_naive solver; solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
+                } else if (hl == "pibt_hr" || hl == "pibt_hindrance" || hl == "pibt_regret" || hl == "pibt_original") {
+                    PIBT_HR solver;
+                    solver.set_options(hl);
+                    solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
+                } else if (hl.rfind("phr_", 0) == 0) {
+                    PULL_IBT_HR solver;
+                    solver.set_options(hl);
+                    solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, run_instance, expander, heuristic, run_planner, metrics);
                 } else if (hl.rfind("pull2_act", 0) == 0) {
                     PULL_IBT_action solver;
                     solver.set_options(hl);

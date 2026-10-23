@@ -16,8 +16,10 @@
 #include "../include/solvers/CBS.hpp"
 #include "../include/solvers/PIBT.hpp"
 #include "../include/solvers/PIBT_naive.hpp"
+#include "../include/solvers/PIBT_HR.hpp"
 #include "../include/solvers/PULL_IBT_action.hpp"
 #include "../include/solvers/PULL_IBT_window.hpp"
+#include "../include/solvers/PULL_IBT_HR.hpp"
 
 
 // Low-Level Components
@@ -100,6 +102,16 @@ int main(int argc, char *argv[])
             solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
         }
 
+        else if (hl_solver == "pibt_hr" || hl_solver == "pibt_hindrance" || hl_solver == "pibt_regret" || hl_solver == "pibt_original") {
+            PIBT_HR solver;
+            solver.set_options(hl_solver);
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
+        else if (hl_solver.rfind("phr_", 0) == 0) {
+            PULL_IBT_HR solver;
+            solver.set_options(hl_solver);
+            solver.solve<ManhattanExpander, TrueDistanceHeuristic<ManhattanExpander>, SafePlanner>(env, instance, expander, heuristic, planner, metrics);
+        }
         else if (hl_solver.rfind("pull2_act", 0) == 0) {
             PULL_IBT_action solver;
             solver.set_options(hl_solver);
